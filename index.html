@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="robots" content="noindex">
+<style>[hidden]{display:none!important}</style>
+<title>Drop Mock</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+  :root { --bg:#eef1f4; --ink:#1d2228; --panel:#ffffff; --line:#cfd6de; --accent:#1565c0; --soft:#e2e7ec; --muted:#4a5560; --onacc:#ffffff; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#151a20; --ink:#e8edf2; --panel:#222a33; --line:#38424d; --accent:#64a8f0; --soft:#2b343e; --muted:#a9b4bf; --onacc:#0b1a2a; color-scheme:dark; } }
+  :root[data-theme="dark"] { --bg:#151a20; --ink:#e8edf2; --panel:#222a33; --line:#38424d; --accent:#64a8f0; --soft:#2b343e; --muted:#a9b4bf; --onacc:#0b1a2a; color-scheme:dark; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { margin:0; height:100%; background:var(--bg); color:var(--ink); font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+  body { display:flex; flex-direction:column; }
+  header { padding-block:8px 4px; padding-left:max(12px, env(safe-area-inset-left, 0px)); padding-right:max(12px, env(safe-area-inset-right, 0px)); }
+  header h1 { margin:0; font-size:16px; }
+  header p { margin:2px 0 0; font-size:12px; color:var(--muted); }
+  .bar { display:flex; gap:6px; padding:6px 12px; overflow-x:auto; flex-wrap:nowrap; }
+  .bar button { flex:0 0 auto; border:1px solid var(--line); background:var(--panel); border-radius:10px; padding:8px 10px; font-size:13px; font-weight:600; color:var(--ink); }
+  .bar button.on { outline:3px solid var(--accent); border-color:var(--accent); }
+  .sw { display:inline-block; width:14px; height:4px; border-radius:2px; vertical-align:middle; margin-right:5px; }
+  #wrap { flex:1; min-height:0; padding:0 8px; }
+  svg { width:100%; height:100%; background:#fff; border:1px solid var(--line); border-radius:12px; touch-action:none; display:block; }
+  #hint { font-size:12px; color:var(--muted); padding:4px 12px; min-height:20px; }
+  footer { display:flex; gap:6px; padding:6px 12px 12px; flex-wrap:wrap; }
+  footer button { flex:1 1 30%; border:0; border-radius:10px; padding:11px 8px; font-size:14px; font-weight:700; background:var(--soft); color:var(--ink); }
+  footer button.go { background:var(--accent); color:var(--onacc); }
+  #toast { position:fixed; left:50%; bottom:90px; transform:translateX(-50%); background:var(--ink); color:var(--bg); padding:8px 14px; border-radius:20px; font-size:13px; opacity:0; transition:opacity .2s; pointer-events:none; }
+  #toast.show { opacity:1; }
+  .ov { position:fixed; inset:0; background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; padding:16px; z-index:20; }
+  .ov[hidden] { display:none; }
+  .ov .card { background:var(--panel); color:var(--ink); border-radius:14px; padding:14px; width:100%; max-width:560px; max-height:90%; overflow:auto; display:flex; flex-direction:column; gap:10px; }
+  .ov p { margin:0; font-size:13px; }
+  .ov img { width:100%; border:1px solid var(--line); border-radius:8px; }
+  .ov input, .ov textarea { width:100%; font-size:16px; padding:8px; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--ink); }
+  .ov .row { display:flex; gap:8px; }
+  .ov .row button { flex:1; border:0; border-radius:10px; padding:11px; font-weight:700; font-size:14px; background:var(--soft); color:var(--ink); }
+  .ov .row button.go { background:var(--accent); color:var(--onacc); }
+  button:focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
+</style>
+<header>
+  <h1>Mock: draw the drops</h1>
+  <p>Draw (1) normal drops and (2) drops crossing a road. Then tap <b>Save picture</b>, long-press the picture to save it (or screenshot), and send it in Relay.</p>
+</header>
+<div class="bar" id="tools">
+  <button data-t="drop" class="on"><span class="sw" style="background:#2e7d32"></span>Drop</button>
+  <button data-t="cross"><span class="sw" style="background:#8e24aa"></span>Road-crossing drop</button>
+  <button data-t="pole">+ Pole</button>
+  <button data-t="spl">+ 1:8</button>
+  <button data-t="note">+ Note</button>
+  <button data-t="pan">Move map</button>
+</div>
+<div class="bar">
+  <button data-s="straight" class="on" id="sStraight">Straight</button>
+  <button data-s="bend" id="sBend">Bends (tap points)</button>
+  <button data-s="free" id="sFree">Freehand</button>
+  <button id="zin">Zoom +</button>
+  <button id="zout">Zoom &minus;</button>
+  <button id="zfit">Fit</button>
+</div>
+<div id="hint"></div>
+<div id="wrap"><svg id="map" xmlns="http://www.w3.org/2000/svg"></svg></div>
+<footer>
+  <button id="undo">Undo</button>
+  <button id="finish">Finish line</button>
+  <button id="clear">Clear all</button>
+  <button id="copy">Copy coordinates</button>
+  <button id="save" class="go">Save picture</button>
+</footer>
+<div id="toast"></div>
+<div id="noteBox" class="ov" hidden><div class="card"><label for="noteIn">Note text</label><input id="noteIn" type="text" autocomplete="off"><div class="row"><button id="noteCancel">Cancel</button><button id="noteOk" class="go">Add note</button></div></div></div>
+<div id="picBox" class="ov" hidden><div class="card"><p>Long-press the picture and Save / Share it, or take a screenshot. Then attach it in Relay.</p><img id="pic" alt="Your drawn drops"><div class="row"><button id="picClose" class="go">Done</button></div></div></div>
+<div id="txtBox" class="ov" hidden><div class="card"><p>Copy this text and paste it in Relay.</p><textarea id="txtOut" rows="8" readonly></textarea><div class="row"><button id="txtClose" class="go">Done</button></div></div></div>
+<script>
+(function(){
+"use strict";
+const NS = "http://www.w3.org/2000/svg";
+const svg = document.getElementById("map");
+const FULL = { x:-12, y:-104, w:240, h:198 };   // metres; SVG y = -north
+let vb = Object.assign({}, FULL);
+let tool = "drop", style = "straight";
+const items = [];          // drawn things, in order
+let active = null;         // line being drawn (bend mode / drag)
+const C = { drop:"#2e7d32", cross:"#8e24aa" };
+
+function el(tag, attrs, parent){ const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); (parent||svg).appendChild(e); return e; }
+function setVB(){ svg.setAttribute("viewBox", `${vb.x} ${vb.y} ${vb.w} ${vb.h}`); }
+function fitVB(){ const r = svg.getBoundingClientRect(); const a = r.width / Math.max(r.height,1);
+  vb = Object.assign({}, FULL); if (vb.w / vb.h < a) { const w = vb.h * a; vb.x -= (w - vb.w)/2; vb.w = w; } else { const h = vb.w / a; vb.y -= (h - vb.h)/2; vb.h = h; } setVB(); }
+
+// ---------- base map (same as the picture) ----------
+const base = el("g", {id:"base"});
+const ink = el("g", {id:"ink"});
+const GREY = "#d9d9d9";
+el("rect", {x:-10, y:-8, width:236, height:16, fill:GREY}, base);
+el("rect", {x:150, y:-100, width:16, height:190, fill:GREY}, base);
+el("line", {x1:-10, y1:0, x2:226, y2:0, stroke:"#9e9e9e", "stroke-width":0.5, "stroke-dasharray":"3 2"}, base);
+el("line", {x1:158, y1:-100, x2:158, y2:90, stroke:"#9e9e9e", "stroke-width":0.5, "stroke-dasharray":"3 2"}, base);
+txt("MAIN ROAD", 4, 1.6, 4.2, "#666", "bold", base);
+const cs = txt("CROSS STREET", 0, 0, 4.2, "#666", "bold", base); cs.setAttribute("transform", "translate(163,-62) rotate(-90)");
+function txt(s, x, y, size, fill, weight, parent, anchor){ const t = el("text", {x, y, "font-size":size, fill, "font-weight":weight||"normal", "font-family":"system-ui,sans-serif", "text-anchor":anchor||"start"}, parent); t.textContent = s; return t; }
+const homes = [];  // {label, x, y} in metres (north up)
+function erven(x0, x1, y0, y1, w, pre, face){
+  let n = 1;
+  for (let x = x0; x + w <= x1 + 0.1; x += w, n++){
+    el("rect", {x, y:-y1, width:w, height:y1-y0, fill:"#fff8e7", stroke:"#b07a2a", "stroke-width":0.35}, base);
+    const hy = face === "S" ? y0 + (y1-y0)*0.35 : y1 - (y1-y0)*0.35;
+    el("circle", {cx:x+w/2, cy:-hy, r:1.6, fill:"#1565c0", stroke:"#fff", "stroke-width":0.4}, base);
+    txt(pre+n, x+w/2, -((y0+y1)/2 + (face === "S" ? 6 : -6)) + 1.2, 3.2, "#7a4a10", "normal", base, "middle");
+    homes.push({label:pre+n, x:x+w/2, y:hy});
+  }
+}
+[[8,38,"S","A"],[38,68,"N","B"],[-38,-8,"N","C"],[-68,-38,"S","D"]].forEach(r => erven(0,150,r[0],r[1],15,r[3],r[2]));
+[[8,38,"S","E"],[-38,-8,"N","F"]].forEach(r => erven(166,226,r[0],r[1],15,r[3],r[2]));
+const poles = [2,37,72,107,142,172,207].map((x,i) => ({label:"P"+(i+1), x, y:6}));
+el("line", {x1:2, y1:-6, x2:207, y2:-6, stroke:"#d32f2f", "stroke-width":1.3}, base);
+poles.forEach((p,i) => { el("circle", {cx:p.x, cy:-p.y, r:2.1, fill:"#fff", stroke:"#000", "stroke-width":0.6}, base);
+  txt(p.label, p.x - (i===2?3:0), -p.y - 3.2, 3.2, "#000", "bold", base, "middle"); });
+el("rect", {x:72-2.6, y:-6-2.6, width:5.2, height:5.2, fill:"#ffb300", stroke:"#000", "stroke-width":0.6}, base);
+txt("1:8", 75.5, -10.5, 3.2, "#b26a00", "bold", base);
+el("line", {x1:170, y1:80, x2:220, y2:80, stroke:"#000", "stroke-width":1.2}, base);
+txt("50 m", 195, 77, 3.4, "#000", "normal", base, "middle");
+svg.appendChild(ink);
+
+// ---------- drawing ----------
+function pt(ev){ const r = svg.getBoundingClientRect(); return { x: vb.x + (ev.clientX - r.left) / r.width * vb.w, y: vb.y + (ev.clientY - r.top) / r.height * vb.h }; }
+function snap(p){ // snap to a home, pole or splitter within 3 m
+  let best = null, bd = 3;
+  homes.concat(poles).concat(items.filter(i => i.kind==="pole"||i.kind==="spl").map(i => ({x:i.x, y:-i.y}))).forEach(h => {
+    const d = Math.hypot(h.x - p.x, -h.y - p.y); if (d < bd) { bd = d; best = {x:h.x, y:-h.y}; } });
+  return best || p;
+}
+function render(){
+  ink.innerHTML = "";
+  const all = active ? items.concat([active]) : items;
+  all.forEach(it => {
+    if (it.kind === "line"){
+      el("polyline", {points: it.pts.map(p => p.x+","+p.y).join(" "), fill:"none", stroke:C[it.type], "stroke-width":1.1, "stroke-linecap":"round", "stroke-linejoin":"round"}, ink);
+      if (it === active && style === "bend") it.pts.forEach(p => el("circle", {cx:p.x, cy:p.y, r:1, fill:C[it.type]}, ink));
+    } else if (it.kind === "pole"){
+      el("circle", {cx:it.x, cy:-it.y, r:2.1, fill:"#fff", stroke:"#000", "stroke-width":0.6}, ink);
+      txt("new pole", it.x, -it.y - 3.2, 3, "#000", "bold", ink, "middle");
+    } else if (it.kind === "spl"){
+      el("rect", {x:it.x-2.6, y:-it.y-2.6, width:5.2, height:5.2, fill:"#ffb300", stroke:"#000", "stroke-width":0.6}, ink);
+      txt("new 1:8", it.x, -it.y - 3.6, 3, "#b26a00", "bold", ink, "middle");
+    } else if (it.kind === "note"){
+      const t = txt(it.text, it.x, -it.y, 3.6, "#c62828", "bold", ink);
+      t.setAttribute("paint-order", "stroke"); t.setAttribute("stroke", "#fff"); t.setAttribute("stroke-width", "1");
+    }
+  });
+  hint();
+}
+function hint(){
+  const h = document.getElementById("hint");
+  if (tool === "pan") h.textContent = "Drag to move the map. Use Zoom + / − to zoom.";
+  else if (tool === "pole" || tool === "spl") h.textContent = "Tap where it goes.";
+  else if (tool === "note") h.textContent = "Tap where the note goes, then type it.";
+  else if (style === "straight") h.textContent = "Drag from the splitter to the home. Lines snap to homes and poles.";
+  else if (style === "bend") h.textContent = active ? "Keep tapping points, then press Finish line." : "Tap each corner point, then press Finish line.";
+  else h.textContent = "Draw with your finger.";
+}
+let panFrom = null, pendingNote = null;
+document.getElementById("noteOk").onclick = () => { const v = document.getElementById("noteIn").value.trim();
+  if (v && pendingNote) { items.push({kind:"note", x:pendingNote.x, y:-pendingNote.y, text:v}); render(); }
+  pendingNote = null; document.getElementById("noteBox").hidden = true; };
+document.getElementById("noteCancel").onclick = () => { pendingNote = null; document.getElementById("noteBox").hidden = true; };
+document.getElementById("picClose").onclick = () => { document.getElementById("picBox").hidden = true; };
+document.getElementById("txtClose").onclick = () => { document.getElementById("txtBox").hidden = true; };
+svg.addEventListener("pointerdown", ev => {
+  ev.preventDefault(); svg.setPointerCapture(ev.pointerId);
+  const p = pt(ev);
+  if (tool === "pan"){ panFrom = {cx:ev.clientX, cy:ev.clientY, x:vb.x, y:vb.y}; return; }
+  if (tool === "pole" || tool === "spl"){ items.push({kind:tool, x:p.x, y:-p.y}); render(); return; }
+  if (tool === "note"){ pendingNote = p; const nb = document.getElementById("noteBox"); nb.hidden = false; const ni = document.getElementById("noteIn"); ni.value = ""; ni.focus(); return; }
+  const q = snap(p);
+  if (style === "bend"){
+    if (!active || active.type !== tool) active = {kind:"line", type:tool, pts:[]};
+    active.pts.push(q); render(); return;
+  }
+  active = {kind:"line", type:tool, pts:[q, q]}; render();
+});
+svg.addEventListener("pointermove", ev => {
+  if (tool === "pan" && panFrom){ const r = svg.getBoundingClientRect();
+    vb.x = panFrom.x - (ev.clientX - panFrom.cx) / r.width * vb.w; vb.y = panFrom.y - (ev.clientY - panFrom.cy) / r.height * vb.h; setVB(); return; }
+  if (!active || style === "bend" || !(ev.buttons || ev.pressure)) return;
+  const p = pt(ev);
+  if (style === "straight") active.pts[1] = snap(p);
+  else { const l = active.pts[active.pts.length-1]; if (Math.hypot(l.x-p.x, l.y-p.y) > 0.8) active.pts.push(p); }
+  render();
+});
+svg.addEventListener("pointerup", () => {
+  panFrom = null;
+  if (!active || style === "bend") return;
+  if (style === "free") active.pts[active.pts.length-1] = snap(active.pts[active.pts.length-1]);
+  const p = active.pts; if (Math.hypot(p[0].x - p[p.length-1].x, p[0].y - p[p.length-1].y) > 1.5) items.push(active);
+  active = null; render();
+});
+function finishBend(){ if (active && active.pts.length > 1) items.push(active); active = null; render(); }
+
+// ---------- buttons ----------
+document.querySelectorAll("[data-t]").forEach(b => b.onclick = () => { finishBend(); tool = b.dataset.t;
+  document.querySelectorAll("[data-t]").forEach(x => x.classList.toggle("on", x === b)); hint(); });
+document.querySelectorAll("[data-s]").forEach(b => b.onclick = () => { finishBend(); style = b.dataset.s;
+  document.querySelectorAll("[data-s]").forEach(x => x.classList.toggle("on", x === b)); hint(); });
+function zoom(f){ const cx = vb.x + vb.w/2, cy = vb.y + vb.h/2; vb.w *= f; vb.h *= f; vb.x = cx - vb.w/2; vb.y = cy - vb.h/2; setVB(); }
+document.getElementById("zin").onclick = () => zoom(0.7);
+document.getElementById("zout").onclick = () => zoom(1/0.7);
+document.getElementById("zfit").onclick = fitVB;
+document.getElementById("undo").onclick = () => { if (active) { active.pts.pop(); if (active.pts.length < 1) active = null; } else items.pop(); render(); };
+document.getElementById("finish").onclick = finishBend;
+document.getElementById("clear").onclick = () => { if (items.length && confirmClear()) { items.length = 0; active = null; render(); } };
+let clearArmed = 0;
+function confirmClear(){ const now = Date.now(); if (now - clearArmed < 2500) return true; clearArmed = now; toast("Tap Clear all again to wipe"); return false; }
+function toast(s){ const t = document.getElementById("toast"); t.textContent = s; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 2200); }
+
+function nearest(p){ let b = null, bd = 1e9; homes.concat(poles).forEach(h => { const d = Math.hypot(h.x - p.x, h.y + p.y); if (d < bd) { bd = d; b = h.label; } });
+  return bd < 4 ? b : `(${p.x.toFixed(1)}, ${(-p.y).toFixed(1)})`; }
+function summary(){
+  return items.map((it, i) => {
+    if (it.kind === "line"){ const L = it.pts.reduce((s, p, k) => k ? s + Math.hypot(p.x - it.pts[k-1].x, p.y - it.pts[k-1].y) : 0, 0);
+      return `${i+1}. ${it.type === "cross" ? "ROAD-CROSSING DROP" : "Drop"} ${nearest(it.pts[0])} -> ${nearest(it.pts[it.pts.length-1])}, ${L.toFixed(1)} m, pts ` +
+        it.pts.map(p => `(${p.x.toFixed(1)},${(-p.y).toFixed(1)})`).join(" "); }
+    if (it.kind === "note") return `${i+1}. Note at (${it.x.toFixed(1)},${it.y.toFixed(1)}): ${it.text}`;
+    return `${i+1}. ${it.kind === "pole" ? "New pole" : "New 1:8"} at (${it.x.toFixed(1)},${it.y.toFixed(1)})`;
+  }).join("\n");
+}
+document.getElementById("copy").onclick = async () => {
+  const s = "Drop mock (metres, main-road centre = y 0)\n" + (summary() || "(nothing drawn)");
+  try { await navigator.clipboard.writeText(s); toast("Copied - paste it in Relay"); }
+  catch (e) { const t = document.getElementById("txtOut"); t.value = s; document.getElementById("txtBox").hidden = false; t.focus(); t.select(); }
+};
+document.getElementById("save").onclick = () => {
+  finishBend();
+  const clone = svg.cloneNode(true);
+  clone.setAttribute("viewBox", `${FULL.x} ${FULL.y} ${FULL.w} ${FULL.h + 40}`);
+  const W = 1400, H = Math.round(W * (FULL.h + 40) / FULL.w);
+  clone.setAttribute("width", W); clone.setAttribute("height", H);
+  const bg = document.createElementNS(NS, "rect"); bg.setAttribute("x", FULL.x); bg.setAttribute("y", FULL.y); bg.setAttribute("width", FULL.w); bg.setAttribute("height", FULL.h + 40); bg.setAttribute("fill", "#fff");
+  clone.insertBefore(bg, clone.firstChild);
+  const lg = document.createElementNS(NS, "g"); clone.appendChild(lg);
+  [["#2e7d32","Drop"],["#8e24aa","Road-crossing drop"],["#d32f2f","Distribution cable"]].forEach((k, i) => {
+    const y = FULL.y + FULL.h + 8 + i * 7; const l = document.createElementNS(NS, "line");
+    l.setAttribute("x1", 0); l.setAttribute("x2", 12); l.setAttribute("y1", y); l.setAttribute("y2", y); l.setAttribute("stroke", k[0]); l.setAttribute("stroke-width", 1.5); lg.appendChild(l);
+    const t = document.createElementNS(NS, "text"); t.setAttribute("x", 15); t.setAttribute("y", y + 1.3); t.setAttribute("font-size", 4); t.setAttribute("font-family", "sans-serif"); t.textContent = k[1]; lg.appendChild(t);
+  });
+  const data = new XMLSerializer().serializeToString(clone);
+  const img = new Image();
+  img.onload = () => {
+    const c = document.createElement("canvas"); c.width = W; c.height = H; const g = c.getContext("2d");
+    g.fillStyle = "#fff"; g.fillRect(0, 0, W, H); g.drawImage(img, 0, 0, W, H);
+    document.getElementById("pic").src = c.toDataURL("image/png"); document.getElementById("picBox").hidden = false;
+  };
+  img.onerror = () => toast("Could not make the picture - use Copy coordinates");
+  img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(data);
+};
+window.addEventListener("resize", fitVB);
+fitVB(); render();
+})();
+</script>
+
+</html>
