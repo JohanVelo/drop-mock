@@ -102,7 +102,7 @@ const base = el("g", {id:"base"}); const ink = el("g", {id:"ink"});
 const GREY = "#d9d9d9";
 const colX = [[0,105],[121,226]];
 const rowY = [[0,60],[76,136],[152,212],[228,288]];
-// road reserves (16 m): around and between the blocks, plus the main road on the west carrying the feeder
+// road reserves (16 m): around and between the blocks, feeder runs along the top road
 const roadsH = [-16, 60, 136, 212, 288];           // top edge of each east-west reserve
 const roadsV = [-16, 105, 226];                     // west edge of each north-south reserve
 roadsH.forEach(y => el("rect", {x:-92, y, width:350, height:16, fill:GREY}, base));
@@ -128,13 +128,13 @@ rowY.forEach(([y0,y1]) => colX.forEach(([x0,x1]) => block(x0, x1, y0, y1, L[bi++
 rowY.forEach(([y0,y1]) => { block(-76, -16, y0, y1, "", true); block(242, 257, y0, y1, "", true); });
 // PON boundary on road centres
 el("rect", {x:-8, y:-8, width:242, height:304, fill:"none", stroke:"#6a1b9a", "stroke-width":1.2, "stroke-dasharray":"6 3"}, base);
-const pl = txt("PON 01 · 112 homes · 8 blocks", 113, -10.5, 4.6, "#6a1b9a", "bold", base, "middle");
-txt("next PON", -46, -22, 4, "#90a4ae", "bold", base, "middle");
-txt("next PON", 250, -22, 4, "#90a4ae", "bold", base, "middle");
+const pl = txt("PON 01 · 112 homes · 8 blocks", 113, -1.8, 4.6, "#6a1b9a", "bold", base, "middle");
+txt("next PON", -46, -26, 4, "#90a4ae", "bold", base, "middle");
+txt("next PON", 250, -26, 4, "#90a4ae", "bold", base, "middle");
 // feeder: from the POP, past the PON along the main road, on to the next PONs
-el("line", {x1:-12, y1:-78, x2:-12, y2:374, stroke:COL.feed, "stroke-width":2.2}, base);
-const f1 = txt("FEEDER from POP", 0, 0, 3.8, COL.feed, "bold", base); f1.setAttribute("transform", "translate(-14.5,-20) rotate(-90)");
-const f2 = txt("FEEDER on to next PONs", 0, 0, 3.8, COL.feed, "bold", base); f2.setAttribute("transform", "translate(-14.5,372) rotate(-90)");
+el("line", {x1:-92, y1:-12, x2:258, y2:-12, stroke:COL.feed, "stroke-width":2.2}, base);
+txt("FEEDER from POP", -90, -15, 3.8, COL.feed, "bold", base);
+txt("on to next PONs", 256, -15, 3.8, COL.feed, "bold", base, "end");
 el("line", {x1:150, y1:362, x2:200, y2:362, stroke:"#000", "stroke-width":1.2}, base);
 txt("50 m", 175, 359, 3.4, "#000", "normal", base, "middle");
 svg.appendChild(ink);
@@ -146,7 +146,7 @@ function snapPts(){
   items.forEach(it => { if (it.kind === "line") it.pts.forEach(p => s.push(p)); else if (it.kind !== "note") s.push({x:it.x, y:it.y}); });
   return s;
 }
-function snapToFeeder(p){ return Math.abs(p.x + 12) < 3 && p.y > -78 && p.y < 374 ? {x:-12, y:p.y} : null; }
+function snapToFeeder(p){ return Math.abs(p.y + 12) < 3 ? {x:p.x, y:-12} : null; }
 function snap(p){
   let best = null, bd = 3;
   snapPts().forEach(h => { const d = Math.hypot(h.x - p.x, h.y - p.y); if (d < bd) { bd = d; best = {x:h.x, y:h.y}; } });
@@ -246,7 +246,7 @@ function nearest(p){
   let b = null, bd = 4;
   homes.forEach(h => { const d = Math.hypot(h.x - p.x, h.y - p.y); if (d < bd) { bd = d; b = "home " + h.label; } });
   items.forEach(it => { if (it.kind === "s8" || it.kind === "s16" || it.kind === "pole") { const d = Math.hypot(it.x - p.x, it.y - p.y); if (d < bd) { bd = d; b = it.kind === "s8" ? "1:8" : it.kind === "s16" ? "1:16" : "pole"; } } });
-  if (!b && Math.abs(p.x + 12) < 1) b = "feeder";
+  if (!b && Math.abs(p.y + 12) < 1) b = "feeder";
   return b || `(${p.x.toFixed(1)}, ${p.y.toFixed(1)})`;
 }
 function summary(){
