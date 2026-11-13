@@ -11,6 +11,7 @@
 <style>
 :root{
   --ink:#10201f; --muted:#5b6b6a; --bg:#eef3f1; --card:#ffffff; --line:#d5dfdc; --soft:#f6f9f8;
+  --q-main:#e31a1c; --q-spur:#1f78b4; --q-drop:#6b6b6b; --q-erf:#a8a8a8; --q-road:#9a9a9a; --q-pon:#7b3fb0;
   --teal:#0f6b63; --teal-d:#0f2a2e; --amber:#f4a300; --red:#d33c2f; --violet:#7b3fb0; --green:#2e8b57; --blue:#1d5fbf;
   --map:#fbfaf6;
   --font:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif; --head:"Space Grotesk","IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
@@ -173,6 +174,13 @@ svg#map{width:100%;height:100%;display:block;touch-action:none}
   .insp .act button{border:0;border-radius:11px;padding:10px;font-weight:700;background:var(--teal);color:#fff}
   .insp .act button.alt{background:var(--card);color:var(--ink);border:1px solid var(--line)}
   .keys{font-size:12px;color:var(--muted);line-height:1.9}
+  .lyr{display:flex;flex-direction:column;gap:1px}
+  .lyr label{display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:6px;font-size:13px;cursor:pointer;user-select:none}
+  .lyr label:hover{background:var(--card)}
+  .lyr input{margin:0;accent-color:var(--teal)}
+  .lyr svg{width:26px;height:14px;flex:0 0 auto}
+  .lyr small{margin-left:auto;color:var(--muted);font-family:var(--mono);font-size:11px}
+  .legend{display:none!important}
   #toast{top:auto;bottom:24px;left:calc(300px + (100vw - 630px)/2)}
   .ov{align-items:center}
   .sheet{border-radius:18px;max-width:560px}
@@ -186,9 +194,9 @@ svg#map{width:100%;height:100%;display:block;touch-action:none}
   <section class="home" id="home">
     <div class="brand">
       <div class="logo"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="2.6" fill="#f4a300"/><circle cx="19" cy="6" r="2.2" fill="#fff"/><circle cx="19" cy="18" r="2.2" fill="#fff"/><path d="M7 12 L17 6 M7 12 L17 18" stroke="#3fb8a8" stroke-width="2"/></svg></div>
-      <h1>PON Lab<small>Snake builder v2 · your designs teach it</small></h1>
+      <h1>PON Lab<small>Tree builder v3 · main + spurs · your rules</small></h1>
     </div>
-    <p class="lead">Real PONs, location removed, each with my new snake plan. Pin what's wrong, then draw it your way. PON A is your own design from last night.</p>
+    <p class="lead">Every PON re-planned with the rules from your designs A–D and your PON M review. Red = main cable, blue = spur.</p>
     <div class="score"><div><b id="sPins">0</b><span>pins</span></div><div><b id="sDone">0/0</b><span>designed</span></div><div><b id="sRules">0</b><span>rules judged</span></div></div>
     <div class="grid" id="cards"></div>
     <div class="sidefoot"><button id="expAll" title="Download every PON you worked on as one file">Export all</button><button id="themeBtn" title="Light / dark">Theme</button></div>
@@ -236,6 +244,7 @@ svg#map{width:100%;height:100%;display:block;touch-action:none}
   <!-- INSPECTOR (laptop only) -->
   <aside class="insp" id="insp">
     <section><h4>Tools</h4><div class="tools" id="tools2"></div></section>
+    <section><h4>Layers</h4><div class="lyr" id="layerList"></div></section>
     <section><h4 id="statTitle">Numbers</h4><div class="stats" id="stats"></div></section>
     <section><h4>Pins <span id="pinCount"></span></h4><div class="pinlist" id="pinlist"></div></section>
     <section class="act"><button id="send2">Send this PON</button><button class="alt" id="clearMine">Clear my drawing</button></section>
@@ -316,7 +325,8 @@ function thumb(s){
   const v=el("svg",{viewBox:`0 0 ${s.w} ${s.h}`,preserveAspectRatio:"xMidYMid meet","aria-hidden":"true"});
   s.erven.forEach(e=>el("polygon",{points:pts(e),fill:"#f3e9d2",stroke:"#d4bf94","stroke-width":.4},v));
   el("polygon",{points:pts(s.pon),fill:"rgba(15,107,99,.10)",stroke:"#0f6b63","stroke-width":Math.max(s.w,s.h)/120},v);
-  s.claude.dc.forEach(l=>el("polyline",{points:pts(l),fill:"none",stroke:"#d33c2f","stroke-width":Math.max(s.w,s.h)/150},v));
+  s.claude.dc.forEach(l=>el("polyline",{points:pts(l),fill:"none",stroke:"#e31a1c","stroke-width":Math.max(s.w,s.h)/150},v));
+  (s.claude.spur||[]).forEach(l=>el("polyline",{points:pts(l),fill:"none",stroke:"#1f78b4","stroke-width":Math.max(s.w,s.h)/150},v));
   return v;
 }
 function homeStats(){
@@ -354,13 +364,30 @@ function toM(ev){const r=svg.getBoundingClientRect();return[vb.x+(ev.clientX-r.l
 svg.addEventListener("wheel",e=>{if(!vb)return;e.preventDefault();const p=toM(e);zoom(Math.exp(e.deltaY*0.0015),p[0],p[1])},{passive:false});
 
 const TOOLS={
- claude:[["pan","Move","#0f6b63","V"],["pin","Pin a problem","#d33c2f","P"],["lay:dc","Cable","#d33c2f","C"],["lay:poles","Poles","#888","O"],["lay:cps","1:8","#f4a300","8"],["lay:drops","Drops","#2e8b57","D"]],
+ claude:[["pan","Move","#0f6b63","V"],["pin","Pin a problem","#d33c2f","P"]],
  yours:[["pan","Move","#0f6b63","V"],["pole","Pole","#ffffff","O"],["s16","1:16","#c62828","S"],["span","Cable","#d33c2f","C"],["cp","1:8","#f4a300","8"],["drop","Drop","#2e8b57","D"],["pin","Pin / note","#7b3fb0","P"],["erase","Erase","#555","E"],["lay:ghost","Show my plan under","#bbb","G"]],
  compare:[["pan","Move","#0f6b63","V"],["pin","Pin a note","#7b3fb0","P"]]
 };
 const HINT={pan:"Drag to move · scroll or pinch to zoom.",pin:"Click the spot that's wrong, then say why.",pole:"Click to place a pole. It snaps to the nearest erf corner.",s16:"Click where the 1:16 goes.",
  span:"Click a pole, then the next. Keep clicking to string the cable; empty space adds a corner pole. Esc stops the chain.",cp:"Click a pole to put a 1:8 on it.",drop:"Click a 1:8, then click its homes. The badge counts to 8. Esc stops.",erase:"Click anything you drew to remove it."};
-let layers={dc:true,poles:true,cps:true,drops:true,ghost:false};
+let layers={dc:true,spur:true,poles:true,cps:true,drops:true,s16:true,homes:true,pon:true,erven:true,roads:true,ghost:false};
+const LAYERS=[["dc","Distribution - main","line","var(--q-main)",1.8],["spur","Distribution - spur","line","var(--q-spur)",1.8],
+ ["drops","Drop cables","line","var(--q-drop)",.8],["poles","Poles","pole"],["cps","1:8 splitters","cp"],["s16","1:16 splitter","s16"],
+ ["homes","Homes","home"],["pon","PON boundary","dash","var(--q-pon)",1.2],["roads","Roads","line","var(--q-road)",1],["erven","Erven","poly"]];
+function sym(kind,col,w){const a='<svg viewBox="0 0 26 14">';
+  if(kind==="line") return a+`<line x1="2" y1="7" x2="24" y2="7" stroke="${col}" stroke-width="${w*1.4}" stroke-linecap="round"/></svg>`;
+  if(kind==="dash") return a+`<line x1="2" y1="7" x2="24" y2="7" stroke="${col}" stroke-width="${w*1.4}" stroke-dasharray="4 2"/></svg>`;
+  if(kind==="pole") return a+'<circle cx="13" cy="7" r="3.2" fill="#fff" stroke="#111" stroke-width="1.2"/></svg>';
+  if(kind==="cp") return a+'<rect x="9" y="3" width="8" height="8" fill="#ffd400" stroke="#111" stroke-width="1.2"/></svg>';
+  if(kind==="s16") return a+'<circle cx="13" cy="7" r="4.2" fill="#e31a1c" stroke="#111" stroke-width="1.2"/></svg>';
+  if(kind==="home") return a+'<circle cx="13" cy="7" r="2.2" fill="#222"/></svg>';
+  return a+'<rect x="4" y="2" width="18" height="10" fill="none" stroke="var(--q-erf)" stroke-width="1"/></svg>';}
+function renderLayers(){const L=$("layerList"); if(!L) return; L.innerHTML="";
+  const c=cur&&cur.claude&&cur.claude.stats||{};
+  const note={dc:c.main_m!=null?Math.round(c.main_m)+" m":"",spur:c.spur_m!=null?Math.round(c.spur_m)+" m":""};
+  LAYERS.forEach(([k,name,kind,col,w])=>{const lb=document.createElement("label");
+    lb.innerHTML=`<input type="checkbox" ${layers[k]?"checked":""}>${sym(kind,col,w)}<span>${name}</span><small>${tab==="claude"?(note[k]||""):""}</small>`;
+    lb.querySelector("input").onchange=e=>{layers[k]=e.target.checked;draw()}; L.appendChild(lb)});}
 function setTab(t){tab=t;document.querySelectorAll("#tabs button,#toptabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
   const rules=t==="rules"; $("rulesPane").hidden=!rules; $("mapwrap").hidden=rules; $("dock").hidden=rules;
   if(rules){renderRules();sidePanels();return}
@@ -408,20 +435,32 @@ function sidePanels(){
 let sel=null;
 function drawClaude(gg,u,pr,cr,show){
   const s=cur,C=s.claude;
-  if(show.drops) C.drops.forEach(d=>el("polyline",{points:pts(d.pts),fill:"none",stroke:d.len>56?"#d33c2f":d.kind==="road"?"#7b3fb0":"#2e8b57","stroke-width":Math.max(.3,1*u),"stroke-dasharray":d.kind==="road"?"3 2":""},gg));
-  if(show.dc) C.dc.forEach(l=>el("polyline",{points:pts(l),fill:"none",stroke:"#d33c2f","stroke-width":Math.max(.8,2.4*u),"stroke-linejoin":"round","stroke-linecap":"round"},gg));
-  if(show.poles) C.poles.forEach(p=>el("circle",{cx:p.xy[0],cy:p.xy[1],r:pr,fill:"#fff",stroke:"#222","stroke-width":Math.max(.3,.9*u)},gg));
-  if(show.cps) C.cps.forEach(c=>{el("rect",{x:c.xy[0]-cr/2,y:c.xy[1]-cr/2,width:cr,height:cr,fill:c.n===8?"#f4a300":"#ff7043",stroke:"#222","stroke-width":Math.max(.3,.9*u)},gg)});
-  el("circle",{cx:s.splitter[0],cy:s.splitter[1],r:cr*.7,fill:"#c62828",stroke:"#000","stroke-width":Math.max(.3,.9*u)},gg);
+  const spur=show.spur===undefined?show.dc:show.spur, lw=Math.max(.5,1.5*u);
+  if(show.drops) C.drops.forEach(d=>el("polyline",{points:pts(d.pts),fill:"none",stroke:d.len>56?"#e31a1c":"var(--q-drop)","stroke-width":Math.max(.2,.6*u),"stroke-dasharray":d.kind==="road"?(2.5*u)+" "+(1.5*u):""},gg));
+  if(spur) (C.spur||[]).forEach(l=>el("polyline",{points:pts(l),fill:"none",stroke:"var(--q-spur)","stroke-width":lw,"stroke-linejoin":"round"},gg));
+  if(show.dc) C.dc.forEach(l=>el("polyline",{points:pts(l),fill:"none",stroke:"var(--q-main)","stroke-width":lw,"stroke-linejoin":"round"},gg));
+  if(show.poles) C.poles.forEach(p=>el("circle",{cx:p.xy[0],cy:p.xy[1],r:pr*.75,fill:"#fff",stroke:"#111","stroke-width":Math.max(.2,.6*u)},gg));
+  if(show.cps) C.cps.forEach(c=>{el("rect",{x:c.xy[0]-cr*.4,y:c.xy[1]-cr*.4,width:cr*.8,height:cr*.8,fill:"#ffd400",stroke:"#111","stroke-width":Math.max(.2,.6*u)},gg);
+    const t=el("text",{x:c.xy[0]+cr*.6,y:c.xy[1]-cr*.5,"font-size":Math.max(2.2,8.5*u),fill:"#111","paint-order":"stroke",stroke:"#fff","stroke-width":1.6*u},gg);t.textContent=c.n+"/8"});
+  if(show.s16!==false) el("circle",{cx:s.splitter[0],cy:s.splitter[1],r:cr*.55,fill:"#e31a1c",stroke:"#111","stroke-width":Math.max(.2,.6*u)},gg);
 }
+function mainSpans(M){ // main cable = longest run from the 1:16 end; the rest are spurs
+  const P=M.poles, adj={}; M.spans.forEach(([a,b],i)=>{if(!P[a]||!P[b])return;(adj[a]=adj[a]||[]).push([b,i]);(adj[b]=adj[b]||[]).push([a,i])});
+  const ids=Object.keys(adj).map(Number); if(!ids.length) return new Set();
+  let root=ids[0]; if(M.s16) root=ids.reduce((m,i)=>dist(P[i],M.s16)<dist(P[m],M.s16)?i:m,ids[0]);
+  const D={[root]:0},via={},q=[root]; while(q.length){const n=q.shift(); (adj[n]||[]).forEach(([m,i])=>{if(D[m]===undefined){D[m]=D[n]+dist(P[n],P[m]);via[m]=[n,i];q.push(m)}})}
+  let far=root; for(const k in D) if(D[k]>D[far]) far=+k;
+  const out=new Set(); while(via[far]){out.add(via[far][1]); far=via[far][0]} return out;}
 function drawMine(gm,u,pr,cr,ghost){
   const s=cur,M=cur.st.mine;
   M.drops.forEach(d=>{const a=s.homesXY[d.h],b=M.poles[M.cps[d.c]]; if(!a||!b) return; const x=crossesRoad(a,b),L=dist(a,b);
-    el("line",{x1:a[0],y1:a[1],x2:b[0],y2:b[1],stroke:L>56?"#d33c2f":x?"#7b3fb0":ghost?"#0f6b63":"#2e8b57","stroke-width":Math.max(.35,1.1*u),"stroke-dasharray":x?"3 2":""},gm)});
-  M.spans.forEach(([a,b])=>{const A=M.poles[a],B=M.poles[b]; if(!A||!B) return; const L=dist(A,B);
-    el("line",{x1:A[0],y1:A[1],x2:B[0],y2:B[1],stroke:L>57?"#ff00aa":ghost?"#0f6b63":"#d33c2f","stroke-width":Math.max(.9,2.6*u),"stroke-linecap":"round"},gm);
+    el("line",{x1:a[0],y1:a[1],x2:b[0],y2:b[1],stroke:L>56?"#e31a1c":ghost?"#0f6b63":"var(--q-drop)","stroke-width":Math.max(.2,.6*u),"stroke-dasharray":x?(2.5*u)+" "+(1.5*u):""},gm)});
+  const mainE=mainSpans(M);
+  M.spans.forEach(([a,b],si)=>{const A=M.poles[a],B=M.poles[b]; if(!A||!B) return; const L=dist(A,B); const isMain=mainE.has(si);
+    if(isMain?!layers.dc:!layers.spur) return;
+    el("line",{x1:A[0],y1:A[1],x2:B[0],y2:B[1],stroke:L>70?"#ff00aa":ghost?"#0f6b63":isMain?"var(--q-main)":"var(--q-spur)","stroke-width":Math.max(.5,1.5*u),"stroke-linecap":"round"},gm);
     if(L>12&&!ghost){const t=el("text",{x:(A[0]+B[0])/2,y:(A[1]+B[1])/2-2*u,"font-size":Math.max(2.4,10*u),"text-anchor":"middle",fill:L>57?"#ff00aa":"#7a1f17","font-weight":"700","paint-order":"stroke",stroke:"#fff","stroke-width":2*u});t.textContent=Math.round(L)+"m";gm.appendChild(t)}});
-  M.poles.forEach((p,i)=>{if(!p)return;el("circle",{cx:p[0],cy:p[1],r:pr*1.1,fill:sel&&sel.k==="pole"&&sel.i===i?"#f4a300":"#fff",stroke:ghost?"#0f6b63":"#111","stroke-width":Math.max(.3,1*u)},gm)});
+  M.poles.forEach((p,i)=>{if(!p)return;el("circle",{cx:p[0],cy:p[1],r:pr*.85,fill:sel&&sel.k==="pole"&&sel.i===i?"#ffd400":"#fff",stroke:ghost?"#0f6b63":"#111","stroke-width":Math.max(.2,.6*u)},gm)});
   M.cps.forEach((pi,i)=>{const p=M.poles[pi]; if(!p) return; const n=M.drops.filter(d=>d.c===i).length;
     el("rect",{x:p[0]-cr/2,y:p[1]-cr/2,width:cr,height:cr,fill:ghost?"#7fd0c4":n===8?"#f4a300":n>8?"#d33c2f":"#ffd27a",stroke:sel&&sel.k==="cp"&&sel.i===i?"#0f6b63":"#222","stroke-width":sel&&sel.k==="cp"&&sel.i===i?Math.max(.8,2.4*u):Math.max(.3,1*u)},gm);
     if(!ghost){const t=el("text",{x:p[0]+cr*.7,y:p[1]-cr*.6,"font-size":Math.max(2.6,10*u),fill:"#5a3a00","font-weight":"800","paint-order":"stroke",stroke:"#fff","stroke-width":2*u},gm);t.textContent=n+"/8"}});
@@ -430,19 +469,18 @@ function drawMine(gm,u,pr,cr,ghost){
 function draw(){
   if(!cur||!vb) return; svg.innerHTML=""; const u=U(); const s=cur;
   const g=el("g",{},svg);
-  el("rect",{x:-2000,y:-2000,width:s.w+4000,height:s.h+4000,fill:"#fbfaf6"},g);
-  s.roads.forEach(r=>{el("polyline",{points:pts(r),fill:"none",stroke:"#e3e0d8","stroke-width":12,"stroke-linecap":"round","stroke-linejoin":"round"},g)});
-  s.roads.forEach(r=>el("polyline",{points:pts(r),fill:"none",stroke:"#c8c3b6","stroke-width":.5,"stroke-dasharray":"3 2"},g));
-  s.erven.forEach(e=>el("polygon",{points:pts(e),fill:"#f6eedb",stroke:"#cdb48a","stroke-width":.35},g));
-  el("polygon",{points:pts(s.pon),fill:"none",stroke:"#7b3fb0","stroke-width":Math.max(1.1,2*u),"stroke-dasharray":"6 3"},g);
+  el("rect",{x:-2000,y:-2000,width:s.w+4000,height:s.h+4000,fill:"#ffffff"},g);
+  if(layers.erven) s.erven.forEach(e=>el("polygon",{points:pts(e),fill:"none",stroke:"var(--q-erf)","stroke-width":Math.max(.15,.5*u)},g));
+  if(layers.roads) s.roads.forEach(r=>el("polyline",{points:pts(r),fill:"none",stroke:"var(--q-road)","stroke-width":Math.max(.3,1*u)},g));
+  if(layers.pon) el("polygon",{points:pts(s.pon),fill:"none",stroke:"var(--q-pon)","stroke-width":Math.max(.4,1.2*u),"stroke-dasharray":(5*u)+" "+(2.5*u)},g);
   s.neighbours.forEach(h=>el("circle",{cx:h[0],cy:h[1],r:1.2,fill:"#b9c3c6"},g));
   const hr=Math.max(1.4,3.2*u);
   const conn=new Set((cur.st.mine.drops||[]).map(d=>d.h));
-  s.homesXY.forEach((h,i)=>el("circle",{cx:h[0],cy:h[1],r:hr,fill:tab==="yours"&&conn.has(i)?"#2e8b57":"#1d5fbf",stroke:"#fff","stroke-width":.4},g));
+  if(layers.homes) s.homesXY.forEach((h,i)=>el("circle",{cx:h[0],cy:h[1],r:hr*.7,fill:tab==="yours"&&conn.has(i)?"#1a9641":"#222"},g));
   const pr=Math.max(1.6,4*u), cr=Math.max(2.6,6*u);
   if(tab==="claude") drawClaude(el("g",{},svg),u,pr,cr,layers);
-  if(tab==="yours"&&layers.ghost) drawClaude(el("g",{opacity:.28},svg),u,pr,cr,{dc:1,poles:1,cps:1,drops:1});
-  if(tab==="compare"){drawClaude(el("g",{opacity:.55},svg),u,pr,cr,{dc:1,poles:1,cps:1,drops:0}); drawMine(el("g",{},svg),u,pr,cr,true);}
+  if(tab==="yours"&&layers.ghost) drawClaude(el("g",{opacity:.28},svg),u,pr,cr,{dc:1,spur:1,poles:1,cps:1,drops:1});
+  if(tab==="compare"){drawClaude(el("g",{opacity:.55},svg),u,pr,cr,{dc:1,spur:1,poles:1,cps:1,drops:0}); drawMine(el("g",{},svg),u,pr,cr,true);}
   if(tab==="yours"){drawMine(el("g",{},svg),u,pr,cr,false);
     // rubber band while stringing cable / drops
     if(hover&&sel){const M=cur.st.mine; const A=sel.k==="pole"?M.poles[sel.i]:sel.k==="cp"?M.poles[M.cps[sel.i]]:null;
@@ -452,11 +490,11 @@ function draw(){
     const col=p.kind==="good"?"#2e8b57":p.kind==="unsure"?"#f4a300":"#d33c2f";
     el("path",{d:"M0 0 C-9 -13 -11 -16 -11 -21 A11 11 0 1 1 11 -21 C11 -16 9 -13 0 0Z",fill:col,stroke:"#fff","stroke-width":2},gp);
     const t=el("text",{x:0,y:-17,"font-size":11,"text-anchor":"middle",fill:"#fff","font-weight":"800"},gp);t.textContent=cur.st.pins.indexOf(p)+1});
-  hud(); legend(); sidePanels();
+  hud(); legend(); sidePanels(); renderLayers();
 }
 function legend(){const L=$("legend"); const it=a=>a.map(([c,t,d])=>`<span><i style="background:${c};${d?"background:repeating-linear-gradient(90deg,"+c+" 0 4px,transparent 4px 7px)":""}"></i>${t}</span>`).join("");
   L.innerHTML=tab==="compare"?it([["#d33c2f","Claude's cable"],["#0f6b63","Your cable"],["#f4a300","Claude 1:8"],["#7fd0c4","Your 1:8"]]):
-    it([["#d33c2f","Cable"],["#2e8b57","Drop"],["#7b3fb0","Drop over road",1],["#d33c2f","Drop > 56 m"],["#f4a300","1:8 full"],["#ff7043","1:8 part"]]);}
+    it([["#e31a1c","Main cable"],["#1f78b4","Spur cable"],["#6b6b6b","Drop"],["#6b6b6b","Drop over road",1],["#e31a1c","Drop > 56 m"],["#ffd400","1:8"]]);}
 function hud(){
   const H=$("hud"); H.innerHTML=""; const add=(t,w)=>{const d=document.createElement("div");d.className="pill"+(w?" warn":"");d.innerHTML=t;H.appendChild(d)};
   if(tab==="claude"||tab==="compare"){const c=claudeStats(cur);
