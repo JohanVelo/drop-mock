@@ -124,6 +124,41 @@ svg#map{width:100%;height:100%;display:block;touch-action:none}
 #toast.show{opacity:1}
 @media (prefers-reduced-motion:no-preference){ .card{transition:transform .15s var(--ease),box-shadow .15s} .card:active{transform:scale(.98)} }
 
+/* ---------- v3: panels, reasons, changes ---------- */
+.panel{background:var(--card);border-top:1px solid var(--line);max-height:42%;min-height:130px;display:flex;flex-direction:column;flex:0 0 auto}
+.phead{display:flex;gap:4px;padding:6px 8px;overflow-x:auto;border-bottom:1px solid var(--line);scrollbar-width:none;align-items:center}
+.phead button{flex:0 0 auto;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:6px 10px;font-size:12.5px;font-weight:700}
+.phead button.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+.phead .x{margin-left:auto;background:none;border:0;font-size:18px;padding:2px 8px}
+.pbody{overflow:auto;padding:8px 10px 12px;font-size:13px;line-height:1.4}
+.prow{border:1px solid var(--line);border-radius:12px;padding:7px 9px;margin-bottom:6px;background:var(--soft)}
+.prow .tx{display:flex;gap:6px;align-items:baseline}
+.prow .val{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-left:auto;white-space:nowrap}
+.prow .b{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap}
+.prow .b button,.mini{border:1px solid var(--line);background:var(--card);border-radius:9px;padding:5px 9px;font-size:12px;font-weight:700;min-height:32px}
+.prow .b button.on.ok,.mini.on.ok{background:var(--green);color:#fff;border-color:var(--green)}
+.prow .b button.on.no,.mini.on.no{background:var(--red);color:#fff;border-color:var(--red)}
+.prow .b button.on.rs,.mini.on.rs{background:var(--violet);color:#fff;border-color:var(--violet)}
+.prow textarea{width:100%;margin-top:6px;border:1px solid var(--line);border-radius:9px;padding:6px;font:inherit;font-size:16px;background:var(--bg);color:var(--ink)}
+.kind{display:inline-block;font-size:10.5px;font-weight:800;border-radius:6px;padding:1px 6px;color:#fff;text-transform:uppercase;letter-spacing:.03em}
+.kind.kept{background:var(--green)} .kind.removed{background:var(--red)} .kind.added{background:var(--blue)}
+.ptab{width:100%;border-collapse:collapse;font-size:12.5px}
+.ptab th{font-size:11px;color:var(--muted);text-align:right;font-weight:700;padding:2px 4px}
+.ptab th:first-child,.ptab td:first-child{text-align:left}
+.ptab td{padding:3px 4px;border-top:1px solid var(--line);text-align:right;font-family:var(--mono)}
+.ptab td:first-child{font-family:var(--font)}
+.ptab tr.tot td{font-weight:800;border-top:2px solid var(--ink)}
+.ab2{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+.ab2.big{grid-template-columns:1fr}
+.ab2 figure{margin:0}.ab2 figcaption{font-size:12px;font-weight:700;margin:2px 0}
+.pnote{color:var(--muted);font-size:12px;margin:2px 0 8px}
+.status{display:inline-block;font-size:10.5px;font-weight:800;border-radius:6px;padding:1px 6px;margin-right:6px;background:var(--line);color:var(--ink);text-transform:uppercase}
+.status.proven{background:var(--green);color:#fff}.status.hard{background:var(--red);color:#fff}.status.candidate{background:var(--amber);color:#1b1300}
+.ev{font-size:11.5px;color:var(--muted);margin-top:3px}
+.rule .ed{margin-top:6px;border:1px solid var(--line);background:var(--bg);border-radius:9px;padding:4px 9px;font-size:12px;font-weight:700}
+#toast2{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--teal-d);color:#fff;padding:6px 8px 6px 14px;border-radius:22px;font-size:13px;font-weight:600;z-index:41;display:flex;gap:10px;align-items:center;box-shadow:var(--sh)}
+#toast2 button{border:0;background:var(--amber);color:#1b1300;border-radius:16px;padding:6px 12px;font-weight:800}
+@media (min-width:1000px){ .panel{max-height:38%} #toast2{bottom:24px} }
 /* =================== LAPTOP LAYOUT =================== */
 @media (min-width:1000px){
   .app{display:grid;grid-template-columns:300px minmax(0,1fr) 330px;grid-template-rows:100%;}
@@ -206,7 +241,8 @@ svg#map{width:100%;height:100%;display:block;touch-action:none}
         <li><b>Claude</b> tab: my PON, cable, poles, 1:8s and drops. Tap <b>Pin</b>, then tap a spot to say what's wrong and which rule it breaks.</li>
         <li><b>Yours</b> tab: the same homes and erven. Place the 1:16, poles, cable, 1:8s and drops yourself.</li>
         <li><b>Rules</b> tab: mark each of my rules right or wrong, fix the wording, add your own.</li>
-        <li>Tap <b>Send</b>: it gives you a picture and a text block. Paste both into Relay.</li>
+        <li><b>Panels</b>: why I did each thing, my score, what changed between my plan and yours, earlier rounds, A/B questions. Tap any line or cable to say why.</li>
+        <li>Tap <b>Send</b>: it goes to Claude's inbox. If the inbox is not reachable you get a picture and a text block to paste into Relay.</li>
       </ol>
     </div>
   </section>
@@ -222,6 +258,7 @@ svg#map{width:100%;height:100%;display:block;touch-action:none}
         <button data-tab="compare">Compare <kbd>3</kbd></button>
         <button data-tab="rules">Rules <kbd>4</kbd></button>
       </nav>
+      <button class="ib" id="pbtn" aria-label="Panels">Panels</button>
       <button class="ib send" id="send">Send</button>
     </div>
     <div class="mapwrap" id="mapwrap">
@@ -232,6 +269,7 @@ svg#map{width:100%;height:100%;display:block;touch-action:none}
       <div class="fab"><button id="zin" aria-label="Zoom in">+</button><button id="zout" aria-label="Zoom out">&minus;</button><button id="zfit" aria-label="Fit" style="font-size:13px">FIT</button><button id="undo" aria-label="Undo" style="font-size:16px">&#8630;</button></div>
     </div>
     <div class="rules" id="rulesPane" hidden></div>
+    <div class="panel" id="panel" hidden></div>
     <div class="dock" id="dock"><div class="tools" id="tools"></div></div>
     <nav class="tabs" id="tabs">
       <button data-tab="claude" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18 L9 12 L13 15 L21 6"/><circle cx="21" cy="6" r="1.6" fill="currentColor"/></svg>Claude's plan</button>
@@ -265,14 +303,24 @@ svg#map{width:100%;height:100%;display:block;touch-action:none}
   <div class="row"><button class="ghost" id="pinDel">Delete pin</button><button id="pinSave">Save pin</button></div>
 </div></div>
 
+<div class="ov" id="rsSheet" hidden><div class="sheet">
+  <div class="grab"></div><h3 id="rsTitle">Why?</h3>
+  <div class="small">Pick every reason that fits (optional), add a note if you like.</div>
+  <div class="rchips" id="rsChips"></div>
+  <textarea id="rsNote" rows="3" placeholder="Anything else? e.g. this pole should be on the corner"></textarea>
+  <div class="row"><button class="ghost" id="rsClear">Clear</button><button id="rsSave">Save</button></div>
+</div></div>
+
 <div class="ov" id="sendSheet" hidden><div class="sheet">
   <div class="grab"></div><h3>Send to Claude</h3>
   <div class="small" id="sendHow">1. Long-press the picture and Save it (or take a screenshot). 2. Tap Copy text. 3. Paste both into Relay.</div>
+  <div class="small" id="sendStatus"></div>
   <img id="sendImg" alt="Your drawing and pins">
   <textarea id="sendTxt" rows="5" readonly></textarea>
   <div class="row"><button class="ghost" id="sendClose">Close</button><button class="ghost" id="sendDl">Download files</button><button id="sendCopy">Copy text</button></div>
 </div></div>
 <div id="toast" role="status" aria-live="polite"></div>
+<div id="toast2" hidden></div>
 
 <script>
 (function(){
@@ -280,6 +328,14 @@ svg#map{width:100%;height:100%;display:block;touch-action:none}
 const NS="http://www.w3.org/2000/svg";
 const $=id=>document.getElementById(id);
 const DESK=matchMedia("(min-width:1000px)");
+/* ---------- v3 constants ---------- */
+const SCHEMA=3;
+let WORKER_URL="https://hrrdohlrfrficrtphcet.supabase.co/rest/v1/ponlab_submissions";   // Supabase inbox table (insert-only). Override: page?inbox=https://...
+let SUBMIT_KEY="sb_publishable_LLMH2UZAmWGRws9j-aIWRQ_wVJ9qeOF";   // public publishable key: can only INSERT into ponlab_submissions
+try{const q=new URLSearchParams(location.search); if(q.get("inbox")!==null)WORKER_URL=q.get("inbox"); if(q.get("key")!==null)SUBMIT_KEY=q.get("key")}catch(e){}
+const MAX_BYTES=2*1024*1024;
+const REASONS=[["erf","Through erf"],["fence","Off back fence"],["square","Crossing not square"],["doubleback","Double-back"],["outside","Outside PON"],["s16","1:16 wrong spot"],["span","Span too long"],["dropRoad","Drop over road"],["poles","Too many poles"],["spur","Should be a spur"],["other","Other"]];
+const TERMW=[["cable_m","Cable metres",1],["poles","Poles",25],["drops_over_56","Drops over 56 m",300],["drops_cross_road_alone","Drops over a road alone",300],["outside_pon_m","Cable outside the PON (m)",10],["self_crossings","Cable crossing cable",3000],["branches_not_at_cp","Branches not on a 1:8",400],["s16_moved_m","1:16 moved (m)",.3],["extra_spurs","Spurs beyond the first",400],["sharp_turns","Sharp turns / double-back",3000],["skew_crossings","Road crossings > 15\u00b0 off square",1500],["through_erven_m","Cable through erven (m)",20]];
 const RULES=[
  {g:"PON",id:"R1",t:"A PON holds at most 112 homes (14 × 1:8 × 8 drops)."},
  {g:"PON",id:"R2",t:"PONs are made of whole street blocks; a block is only split when there is no other way."},
@@ -288,10 +344,10 @@ const RULES=[
  {g:"Feeder & 1:16",id:"R5",t:"One 1:16 per PON, on the feeder or link at the PON edge nearest its homes."},
  {g:"Feeder & 1:16",id:"R6",t:"The feeder stays on one side of the road and does not zig-zag."},
  {g:"Distribution",id:"R7",t:"Poles stand on erf corners on the back fence (where side fences meet the back fence)."},
- {g:"Distribution",id:"R8",t:"The cable is straight spans pole to pole; spans up to 57 m, mostly 25–57 m."},
+ {g:"Distribution",id:"R8",t:"The cable is straight spans pole to pole; spans up to 70 m."},
  {g:"Distribution",id:"R9",t:"The cable runs down the middle of the block, on the back fence between the two rows."},
  {g:"Distribution",id:"R10",t:"A road crossing is a short square hop with a pole on each side, so no slack hangs over the road."},
- {g:"Distribution",id:"R11",t:"One snake through the PON from the 1:16; no branches, never over the middle of an erf."},
+ {g:"Distribution",id:"R11",t:"One main cable from the 1:16 plus at most one spur, taken off a 1:8 pole; never over the middle of an erf."},
  {g:"Distribution",id:"R12",t:"The cable never leaves its PON and never crosses another cable."},
  {g:"1:8",id:"R13",t:"14 × 1:8 per PON, each full with 8 drops; the last one may be part-full."},
  {g:"1:8",id:"R14",t:"A 1:8 sits on a corner pole on the middle line, one every 8 homes (about 4 erven each side)."},
@@ -303,10 +359,31 @@ const RULES=[
 let SC=[], cur=null, tab="claude", tool="pan", vb=null, full=null, hover=null, spaceDown=false;
 const S=k=>{try{return JSON.parse(localStorage.getItem("ponlab:"+k)||"null")}catch(e){return null}};
 const W=(k,v)=>{try{localStorage.setItem("ponlab:"+k,JSON.stringify(v))}catch(e){}};
-let rulesState=S("rules")||{votes:{},notes:{},mine:[]};
-function blank(){return{poles:[],spans:[],s16:null,cps:[],drops:[]}}
-function st(s){const x=S("scene:"+s.id); if(x) return x; return {pins:[],mine:s.jj?JSON.parse(JSON.stringify(s.jj)):blank()}}
-function save(){ if(cur) W("scene:"+cur.id,cur.st); W("rules",rulesState); homeStats(); }
+let rulesState=S("rules")||{votes:{},notes:{},mine:[]}; rulesState.edits=rulesState.edits||{}; let BOOK=[];
+function blank(){return{poles:[],spans:[],s16:null,cps:[],drops:[],reg:{s:{},c:{},d:{},n:{s:0,c:0,d:0}}}}
+/* F1: stable ids. Poles are p<index+1> (never re-indexed: erase nulls). Spans/1:8s/drops get an id the first time they exist and keep it. */
+function ensureIds(M){M.reg=M.reg||{s:{},c:{},d:{},n:{s:0,c:0,d:0}};const R=M.reg;
+  M.spans.forEach(([a,b])=>{const k=a+"-"+b;if(!R.s[k])R.s[k]="s"+(++R.n.s)});
+  M.cps.forEach(p=>{if(!R.c[p])R.c[p]="c"+(++R.n.c)});
+  M.drops.forEach(d=>{if(!R.d[d.h])R.d[d.h]="d"+(++R.n.d)})}
+function fillState(x,s){x.pins=x.pins||[];x.mine=x.mine||(s&&s.jj?JSON.parse(JSON.stringify(s.jj)):blank());x.reasons=x.reasons||{};x.changes=x.changes||{};x.why=x.why||{};x.ab=x.ab||{};ensureIds(x.mine);return x}
+function st(s){const x=S("scene:"+s.id); return fillState(x||{pins:[]},s)}
+function persist(){ if(cur) W("scene:"+cur.id,cur.st); W("rules",rulesState); }
+function save(){ if(cur) ensureIds(cur.st.mine); persist(); homeStats(); renderPanel(); }
+/* F10: old ponlab:* data -> schema 3. Additive only, and the whole old set is copied to ponlab:bak_v2 first. */
+function migrateLS(){ if(S("schema")===SCHEMA) return;
+  try{const bak={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.indexOf("ponlab:")===0&&k.indexOf("ponlab:bak_")!==0)bak[k]=localStorage.getItem(k)}
+    try{if(Object.keys(bak).length&&!localStorage.getItem("ponlab:bak_v2"))localStorage.setItem("ponlab:bak_v2",JSON.stringify(bak))}catch(e){}
+    Object.keys(bak).filter(k=>k.indexOf("ponlab:scene:")===0).forEach(k=>{try{const x=fillState(JSON.parse(bak[k]),null);localStorage.setItem(k,JSON.stringify(x))}catch(e){}});
+    const r=S("rules"); if(r){r.edits=r.edits||{};W("rules",r)}
+    W("schema",SCHEMA)}catch(e){}}
+/* scene normalisation: the page works on a v2 scenes.json too (same ids as migrate_scenes.py) */
+function normClaude(c,s){(c.poles||[]).forEach((p,i)=>{p.id=p.id||"p"+(i+1)});(c.cps||[]).forEach((q,i)=>{q.id=q.id||"c"+(i+1)});(c.drops||[]).forEach((d,i)=>{d.id=d.id||"d"+(i+1)});
+  if(!c.spans){c.spans=[];[["main",c.dc],["spur",c.spur]].forEach(([k,L])=>(L||[]).forEach(l=>{for(let i=1;i<l.length;i++){if(dist(l[i-1],l[i])<.05)continue;c.spans.push({id:"s"+(c.spans.length+1),a:l[i-1],b:l[i],kind:k})}}))}
+  if(!c.x16)c.x16={id:"x16",xy:s.splitter};return c}
+function normScene(s){normClaude(s.claude,s);if(!s.rounds)s.rounds=[{round:1,date:"",claude:JSON.parse(JSON.stringify(s.claude)),note:""}];s.rounds.forEach(r=>normClaude(r.claude,s));s.ab=(s.ab||[]).slice(0,3);return s}
+function CL(){const s=cur;if(!s.rounds||s.ri===undefined||s.ri>=s.rounds.length-1)return s.claude;return s.rounds[s.ri].claude}
+let hl=new Set(), psec="why", popen=false, pendingWhy=null, diffCache=null, scoreCache=null;
 function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(toast.h);toast.h=setTimeout(()=>e.classList.remove("show"),1800)}
 function el(tag,a,p){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
 const pts=a=>a.map(p=>p[0]+","+p[1]).join(" ");
@@ -349,7 +426,7 @@ function renderHome(){
 
 /* ---------- scene ---------- */
 const svg=$("map");
-function openScene(s){cur=s; cur.st=st(s); hist=[]; sel=null;
+function openScene(s){cur=s; cur.st=st(s); hist=[]; sel=null; cur.ri=s.rounds.length-1; hl=new Set(); diffCache=null; scoreCache=null;
   if(!DESK.matches){$("home").hidden=true;} $("scene").hidden=false;
   const C=s.claude.stats||{};
   $("stitle").innerHTML=`${s.title}<small>${s.homes} homes · my plan ${C.cable_m?Math.round(C.cable_m)+" m, ":""}${s.claude.cps.length} × 1:8${s.tag?" · "+s.tag:""}</small>`;
@@ -364,11 +441,11 @@ function toM(ev){const r=svg.getBoundingClientRect();return[vb.x+(ev.clientX-r.l
 svg.addEventListener("wheel",e=>{if(!vb)return;e.preventDefault();const p=toM(e);zoom(Math.exp(e.deltaY*0.0015),p[0],p[1])},{passive:false});
 
 const TOOLS={
- claude:[["pan","Move","#0f6b63","V"],["pin","Pin a problem","#d33c2f","P"]],
- yours:[["pan","Move","#0f6b63","V"],["pole","Pole","#ffffff","O"],["s16","1:16","#c62828","S"],["span","Cable","#d33c2f","C"],["cp","1:8","#f4a300","8"],["drop","Drop","#2e8b57","D"],["pin","Pin / note","#7b3fb0","P"],["erase","Erase","#555","E"],["lay:ghost","Show my plan under","#bbb","G"]],
- compare:[["pan","Move","#0f6b63","V"],["pin","Pin a note","#7b3fb0","P"]]
+ claude:[["pan","Move / tap for why","#0f6b63","V"],["pin","Pin a problem","#d33c2f","P"]],
+ yours:[["pan","Move","#0f6b63","V"],["pole","Pole","#ffffff","O"],["s16","1:16","#c62828","S"],["span","Cable","#d33c2f","C"],["cp","1:8","#f4a300","8"],["drop","Drop","#2e8b57","D"],["pin","Pin / note","#7b3fb0","P"],["erase","Erase","#555","E"],["copyc","Copy Claude's plan","#888","K"],["lay:ghost","Show my plan under","#bbb","G"]],
+ compare:[["pan","Move / tap for why","#0f6b63","V"],["pin","Pin a note","#7b3fb0","P"]]
 };
-const HINT={pan:"Drag to move · scroll or pinch to zoom.",pin:"Click the spot that's wrong, then say why.",pole:"Click to place a pole. It snaps to the nearest erf corner.",s16:"Click where the 1:16 goes.",
+const HINT={pan:"Drag to move · scroll or pinch to zoom · tap a pole, cable, 1:8 or drop to say why.",copyc:"Copies Claude's plan into yours so you can change it.",pin:"Click the spot that's wrong, then say why.",pole:"Click to place a pole. It snaps to the nearest erf corner.",s16:"Click where the 1:16 goes.",
  span:"Click a pole, then the next. Keep clicking to string the cable; empty space adds a corner pole. Esc stops the chain.",cp:"Click a pole to put a 1:8 on it.",drop:"Click a 1:8, then click its homes. The badge counts to 8. Esc stops.",erase:"Click anything you drew to remove it."};
 let layers={dc:true,spur:true,poles:true,cps:true,drops:true,s16:true,homes:true,pon:true,erven:true,roads:true,ghost:false};
 const LAYERS=[["dc","Distribution - main","line","var(--q-main)",1.8],["spur","Distribution - spur","line","var(--q-spur)",1.8],
@@ -383,15 +460,16 @@ function sym(kind,col,w){const a='<svg viewBox="0 0 26 14">';
   if(kind==="home") return a+'<circle cx="13" cy="7" r="2.2" fill="#222"/></svg>';
   return a+'<rect x="4" y="2" width="18" height="10" fill="none" stroke="var(--q-erf)" stroke-width="1"/></svg>';}
 function renderLayers(){const L=$("layerList"); if(!L) return; L.innerHTML="";
-  const c=cur&&cur.claude&&cur.claude.stats||{};
+  const c=cur&&CL().stats||{};
   const note={dc:c.main_m!=null?Math.round(c.main_m)+" m":"",spur:c.spur_m!=null?Math.round(c.spur_m)+" m":""};
   LAYERS.forEach(([k,name,kind,col,w])=>{const lb=document.createElement("label");
     lb.innerHTML=`<input type="checkbox" ${layers[k]?"checked":""}>${sym(kind,col,w)}<span>${name}</span><small>${tab==="claude"?(note[k]||""):""}</small>`;
     lb.querySelector("input").onchange=e=>{layers[k]=e.target.checked;draw()}; L.appendChild(lb)});}
 function setTab(t){tab=t;document.querySelectorAll("#tabs button,#toptabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
   const rules=t==="rules"; $("rulesPane").hidden=!rules; $("mapwrap").hidden=rules; $("dock").hidden=rules;
-  if(rules){renderRules();sidePanels();return}
-  tool="pan"; sel=null; renderTools(); if(vb) draw(); else requestAnimationFrame(()=>{if(cur)fit()});}
+  if(rules){renderRules();sidePanels();renderPanel();return}
+  if(t==="compare")psec="changes"; else if(psec==="changes")psec="why";
+  tool="pan"; sel=null; renderTools(); if(vb) draw(); else requestAnimationFrame(()=>{if(cur)fit()}); renderPanel();}
 document.querySelectorAll("#tabs button,#toptabs button").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
 function renderTools(){
   [$("tools"),$("tools2")].forEach(T=>{T.innerHTML="";
@@ -401,7 +479,7 @@ function renderTools(){
     b.onclick=()=>pickTool(k);T.appendChild(b)})});
   $("hint").textContent=HINT[tool]||"";
   svg.style.cursor=tool==="pan"?"grab":"crosshair";}
-function pickTool(k){if(k.startsWith("lay:")){layers[k.slice(4)]=!layers[k.slice(4)]}else{tool=k;sel=null}renderTools();draw()}
+function pickTool(k){if(k==="copyc"){copyClaude();return}if(k.startsWith("lay:")){layers[k.slice(4)]=!layers[k.slice(4)]}else{tool=k;sel=null}renderTools();draw()}
 
 /* ---------- metrics ---------- */
 function mineStats(s,M){
@@ -412,7 +490,7 @@ function mineStats(s,M){
   return {cable:L,poles:P.filter(Boolean).length,spanMax:mx,long,cps:M.cps.length,full:fills.filter(n=>n===8).length,over:fills.filter(n=>n>8).length,
     homes:new Set(M.drops.map(d=>d.h)).size,dropMax:dl.length?Math.max(...dl.map(d=>d.l)):0,over56:dl.filter(d=>d.l>56).length,road:dl.filter(d=>d.x).length};
 }
-function claudeStats(s){const C=s.claude,S0=C.stats||{};const dl=C.drops.map(d=>d.len);
+function claudeStats(s){const C=CL(),S0=C.stats||{};const dl=C.drops.map(d=>d.len);
   return {cable:S0.cable_m??0,poles:C.poles.length,spanMax:S0.span_max??0,long:0,cps:C.cps.length,full:C.cps.filter(c=>c.n===8).length,over:0,
     homes:C.drops.length,dropMax:dl.length?Math.max(...dl):0,over56:dl.filter(l=>l>56).length,road:C.drops.filter(d=>d.kind==="road").length};}
 function sidePanels(){
@@ -434,7 +512,7 @@ function sidePanels(){
 /* ---------- drawing ---------- */
 let sel=null;
 function drawClaude(gg,u,pr,cr,show){
-  const s=cur,C=s.claude;
+  const s=cur,C=CL();
   const spur=show.spur===undefined?show.dc:show.spur, lw=Math.max(.5,1.5*u);
   if(show.drops) C.drops.forEach(d=>el("polyline",{points:pts(d.pts),fill:"none",stroke:d.len>56?"#e31a1c":"var(--q-drop)","stroke-width":Math.max(.2,.6*u),"stroke-dasharray":d.kind==="road"?(2.5*u)+" "+(1.5*u):""},gg));
   if(spur) (C.spur||[]).forEach(l=>el("polyline",{points:pts(l),fill:"none",stroke:"var(--q-spur)","stroke-width":lw,"stroke-linejoin":"round"},gg));
@@ -442,7 +520,7 @@ function drawClaude(gg,u,pr,cr,show){
   if(show.poles) C.poles.forEach(p=>el("circle",{cx:p.xy[0],cy:p.xy[1],r:pr*.75,fill:"#fff",stroke:"#111","stroke-width":Math.max(.2,.6*u)},gg));
   if(show.cps) C.cps.forEach(c=>{el("rect",{x:c.xy[0]-cr*.4,y:c.xy[1]-cr*.4,width:cr*.8,height:cr*.8,fill:"#ffd400",stroke:"#111","stroke-width":Math.max(.2,.6*u)},gg);
     const t=el("text",{x:c.xy[0]+cr*.6,y:c.xy[1]-cr*.5,"font-size":Math.max(2.2,8.5*u),fill:"#111","paint-order":"stroke",stroke:"#fff","stroke-width":1.6*u},gg);t.textContent=c.n+"/8"});
-  if(show.s16!==false) el("circle",{cx:s.splitter[0],cy:s.splitter[1],r:cr*.55,fill:"#e31a1c",stroke:"#111","stroke-width":Math.max(.2,.6*u)},gg);
+  if(show.s16!==false) el("circle",{cx:C.x16.xy[0],cy:C.x16.xy[1],r:cr*.55,fill:"#e31a1c",stroke:"#111","stroke-width":Math.max(.2,.6*u)},gg);
 }
 function mainSpans(M){ // main cable = longest run from the 1:16 end; the rest are spurs
   const P=M.poles, adj={}; M.spans.forEach(([a,b],i)=>{if(!P[a]||!P[b])return;(adj[a]=adj[a]||[]).push([b,i]);(adj[b]=adj[b]||[]).push([a,i])});
@@ -480,12 +558,13 @@ function draw(){
   const pr=Math.max(1.6,4*u), cr=Math.max(2.6,6*u);
   if(tab==="claude") drawClaude(el("g",{},svg),u,pr,cr,layers);
   if(tab==="yours"&&layers.ghost) drawClaude(el("g",{opacity:.28},svg),u,pr,cr,{dc:1,spur:1,poles:1,cps:1,drops:1});
-  if(tab==="compare"){drawClaude(el("g",{opacity:.55},svg),u,pr,cr,{dc:1,spur:1,poles:1,cps:1,drops:0}); drawMine(el("g",{},svg),u,pr,cr,true);}
+  if(tab==="compare") drawCompare(el("g",{},svg),u,pr,cr);
   if(tab==="yours"){drawMine(el("g",{},svg),u,pr,cr,false);
     // rubber band while stringing cable / drops
     if(hover&&sel){const M=cur.st.mine; const A=sel.k==="pole"?M.poles[sel.i]:sel.k==="cp"?M.poles[M.cps[sel.i]]:null;
       if(A){const L=dist(A,hover); el("line",{x1:A[0],y1:A[1],x2:hover[0],y2:hover[1],stroke:sel.k==="pole"?(L>57?"#ff00aa":"#d33c2f"):(L>56?"#d33c2f":"#2e8b57"),"stroke-width":Math.max(.6,1.6*u),"stroke-dasharray":"4 3",opacity:.8},svg);
         const t=el("text",{x:hover[0]+6*u,y:hover[1]-6*u,"font-size":Math.max(2.6,11*u),fill:"#10201f","font-weight":"800","paint-order":"stroke",stroke:"#fff","stroke-width":2.5*u},svg);t.textContent=Math.round(L)+" m"}}}
+  drawMarks(u,pr,cr);
   cur.st.pins.filter(p=>p.tab===tab).forEach(p=>{const gp=el("g",{transform:`translate(${p.xy[0]},${p.xy[1]}) scale(${u})`},svg);
     const col=p.kind==="good"?"#2e8b57":p.kind==="unsure"?"#f4a300":"#d33c2f";
     el("path",{d:"M0 0 C-9 -13 -11 -16 -11 -21 A11 11 0 1 1 11 -21 C11 -16 9 -13 0 0Z",fill:col,stroke:"#fff","stroke-width":2},gp);
@@ -493,7 +572,7 @@ function draw(){
   hud(); legend(); sidePanels(); renderLayers();
 }
 function legend(){const L=$("legend"); const it=a=>a.map(([c,t,d])=>`<span><i style="background:${c};${d?"background:repeating-linear-gradient(90deg,"+c+" 0 4px,transparent 4px 7px)":""}"></i>${t}</span>`).join("");
-  L.innerHTML=tab==="compare"?it([["#d33c2f","Claude's cable"],["#0f6b63","Your cable"],["#f4a300","Claude 1:8"],["#7fd0c4","Your 1:8"]]):
+  L.innerHTML=tab==="compare"?it([["#2e8b57","Kept (same cable)"],["#d33c2f","Removed by you",1],["#1d5fbf","Added by you"],["#7b3fb0","Has a reason"]]):
     it([["#e31a1c","Main cable"],["#1f78b4","Spur cable"],["#6b6b6b","Drop"],["#6b6b6b","Drop over road",1],["#e31a1c","Drop > 56 m"],["#ffd400","1:8"]]);}
 function hud(){
   const H=$("hud"); H.innerHTML=""; const add=(t,w)=>{const d=document.createElement("div");d.className="pill"+(w?" warn":"");d.innerHTML=t;H.appendChild(d)};
@@ -535,7 +614,8 @@ function nearest(list,p,maxPx){let bi=-1,bd=maxPx*U();list.forEach((q,i)=>{if(!q
 function cornerSnap(p){let best=null,bd=Math.max(4,10*U());for(const e of cur.erven)for(const c of e){const d=dist(c,p);if(d<bd){bd=d;best=[c[0],c[1]]}}return best||[+p[0].toFixed(1),+p[1].toFixed(1)]}
 function tap(p){
   if(tool==="pin"){openPin(null,p);return}
-  if(tab!=="yours"||tool==="pan")return;
+  if(tool==="pan"){pickTap(p);return}
+  if(tab!=="yours")return;
   const M=cur.st.mine;
   if(tool==="pole"){snapshot();M.poles.push(cornerSnap(p));}
   else if(tool==="s16"){snapshot();M.s16=[+p[0].toFixed(1),+p[1].toFixed(1)];}
@@ -558,26 +638,28 @@ function tap(p){
     const pi=nearest(M.poles,p,12);
     const di=(()=>{let bi=-1,bd=8*U();M.drops.forEach((d,i)=>{const a=cur.homesXY[d.h],b=M.poles[M.cps[d.c]];if(!b)return;const dd=segD(p,a,b);if(dd<bd){bd=dd;bi=i}});return bi})();
     const si=(()=>{let bi=-1,bd=8*U();M.spans.forEach(([a,b],i)=>{if(!M.poles[a]||!M.poles[b])return;const dd=segD(p,M.poles[a],M.poles[b]);if(dd<bd){bd=dd;bi=i}});return bi})();
+    pendingWhy=eraseWhy(p);
     snapshot();
     if(pi>=0){const ci=M.cps.indexOf(pi); if(ci>=0){M.drops=M.drops.filter(d=>d.c!==ci).map(d=>({h:d.h,c:d.c>ci?d.c-1:d.c}));M.cps.splice(ci,1)}
       else{M.poles[pi]=null;M.spans=M.spans.filter(([a,b])=>a!==pi&&b!==pi)}}
     else if(M.s16&&dist(M.s16,p)<12*U()) M.s16=null;
     else if(di>=0) M.drops.splice(di,1); else if(si>=0) M.spans.splice(si,1); else {hist.pop();toast("Nothing there")}
   }
-  save(); draw();
+  save(); draw(); if(pendingWhy){const w=pendingWhy;pendingWhy=null;offerWhy(w)}
 }
 function segD(p,a,b){const dx=b[0]-a[0],dy=b[1]-a[1],l=dx*dx+dy*dy;let t=l?((p[0]-a[0])*dx+(p[1]-a[1])*dy)/l:0;t=Math.max(0,Math.min(1,t));return Math.hypot(p[0]-a[0]-t*dx,p[1]-a[1]-t*dy)}
 
 /* ---------- keyboard (laptop) ---------- */
 document.addEventListener("keydown",e=>{
   const typing=/TEXTAREA|INPUT/.test(document.activeElement.tagName); if(typing) return;
-  if(!$("pinSheet").hidden||!$("sendSheet").hidden){if(e.key==="Escape"){$("pinSheet").hidden=true;$("sendSheet").hidden=true}return}
+  if(!$("pinSheet").hidden||!$("sendSheet").hidden||!$("rsSheet").hidden){if(e.key==="Escape"){$("pinSheet").hidden=true;$("sendSheet").hidden=true;$("rsSheet").hidden=true}return}
   if(e.code==="Space"){spaceDown=true;e.preventDefault();return}
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"){e.preventDefault();undo();return}
   if(!cur) return;
   const k=e.key.toLowerCase();
   if(["1","2","3","4"].includes(k)){setTab(["claude","yours","compare","rules"][+k-1]);return}
   if(k==="f"){fit();return}
+  if(k==="l"){$("pbtn").click();return}
   if(k==="escape"){sel=null;hover=null;draw();return}
   if(k==="["||k==="]"){const i=SC.indexOf(cur)+(k==="]"?1:-1);if(SC[i])openScene(SC[i]);return}
   const t=(TOOLS[tab]||[]).find(x=>x[3].toLowerCase()===k); if(t) pickTool(t[0]);
@@ -586,7 +668,10 @@ document.addEventListener("keyup",e=>{if(e.code==="Space")spaceDown=false});
 
 /* ---------- pins ---------- */
 let editing=null;
-function allRules(){return RULES.concat(rulesState.mine.map((t,i)=>({g:"Yours",id:"J"+(i+1),t})))}
+function allRules(){
+  const edit=r=>Object.assign({},r,{t:rulesState.edits[r.id]||r.t,edited:!!rulesState.edits[r.id]});
+  const book=BOOK.map(b=>({g:"Rules book",id:b.id,t:b.words||b.t||"",status:b.status,ev:b.evidence_n!=null?b.evidence_n:(b.evidence||[]).length,cx:b.counterexamples_n!=null?b.counterexamples_n:(b.counterexamples||[]).length,scope:b.scope}));
+  return book.concat(RULES.map(r=>Object.assign({},r,{g:BOOK.length?"Earlier rules (v2)":r.g}))).concat(rulesState.mine.map((t,i)=>({g:"Yours",id:"J"+(i+1),t}))).map(edit)}
 function openPin(i,p){
   const tapPin=i===null?cur.st.pins.findIndex(q=>q.tab===tab&&dist(q.xy,p)<18*U()):i;
   editing=tapPin>=0?cur.st.pins[tapPin]:{tab,xy:[+p[0].toFixed(1),+p[1].toFixed(1)],kind:"wrong",rules:[],note:""};
@@ -603,34 +688,235 @@ $("pinNote").addEventListener("keydown",e=>{if(e.key==="Enter"&&(e.ctrlKey||e.me
 $("pinDel").onclick=()=>{cur.st.pins.splice(cur.st.pins.indexOf(editing),1);$("pinSheet").hidden=true;save();draw();renderHome()};
 $("pinSheet").onclick=e=>{if(e.target.id==="pinSheet")$("pinSheet").hidden=true};
 
-/* ---------- rules ---------- */
+/* ---------- F8 rules ---------- */
 function renderRules(){
   const P=$("rulesPane"); P.innerHTML=""; let g="";
-  const intro=document.createElement("p");intro.className="lead";intro.style.margin="2px 0 4px";intro.textContent="These are the rules I plan by. Tell me which are right, which are wrong, and fix the wording. Add the things you always look out for.";P.appendChild(intro);
+  const intro=document.createElement("p");intro.className="lead";intro.style.margin="2px 0 4px";intro.textContent=BOOK.length?"The rules book. A rule is only 'proven' after 3 separate cases with none against, and 'hard' once it never breaks. Vote, and fix the wording if I have it wrong.":"These are the rules I plan by. Tell me which are right, which are wrong, and fix the wording. Add the things you always look out for.";P.appendChild(intro);
   allRules().forEach(r=>{
-    if(r.g!==g){g=r.g;const h=document.createElement("div");h.className="rgroup";h.innerHTML=`<h3>${g}</h3>`;P.appendChild(h)}
+    if(r.g!==g){g=r.g;const h=document.createElement("div");h.className="rgroup";h.innerHTML=`<h3></h3>`;h.firstChild.textContent=g;P.appendChild(h)}
     const d=document.createElement("div");d.className="rule";const v=rulesState.votes[r.id];
-    d.innerHTML=`<div class="t"><span class="id">${r.id}</span></div><div class="vote"><button class="ok">Right</button><button class="mid">Partly</button><button class="no">Wrong</button></div>`;
-    d.querySelector(".t").appendChild(document.createTextNode(r.t));
+    d.innerHTML=`<div class="t"><span class="id"></span></div><div class="ev" hidden></div><div class="vote"><button class="ok">Right</button><button class="mid">Partly</button><button class="no">Wrong</button></div><button class="ed">Edit wording</button>`;
+    d.querySelector(".id").textContent=r.id;
+    if(r.status){const s=document.createElement("span");s.className="status "+r.status;s.textContent=r.status;d.querySelector(".t").insertBefore(s,d.querySelector(".id"))}
+    d.querySelector(".t").appendChild(document.createTextNode(r.t+(r.edited?"  (edited)":"")));
+    if(r.ev!=null){const e=d.querySelector(".ev");e.hidden=false;e.textContent=`${r.ev} case${r.ev===1?"":"s"} for · ${r.cx||0} against`+(r.scope?" · "+r.scope:"")}
     const bs=d.querySelectorAll(".vote button"); const keys=["right","partly","wrong"];
     bs.forEach((b,k)=>{b.classList.toggle("on",v===keys[k]);b.onclick=()=>{rulesState.votes[r.id]=keys[k];save();renderRules()}});
-    if(v&&v!=="right"){const ta=document.createElement("textarea");ta.rows=2;ta.placeholder="How should it read?";ta.value=rulesState.notes[r.id]||"";ta.oninput=()=>{rulesState.notes[r.id]=ta.value;save()};d.appendChild(ta)}
+    if(v&&v!=="right"){const ta=document.createElement("textarea");ta.rows=2;ta.placeholder="How should it read?";ta.value=rulesState.notes[r.id]||"";ta.oninput=()=>{rulesState.notes[r.id]=ta.value;persist()};d.appendChild(ta)}
+    d.querySelector(".ed").onclick=ev=>{const b=ev.target;if(d.querySelector(".edta")){return}
+      const ta=document.createElement("textarea");ta.className="edta";ta.rows=3;ta.value=r.t;ta.oninput=()=>{const x=ta.value.trim();const orig=(BOOK.find(q=>q.id===r.id)||{}).words||(RULES.find(q=>q.id===r.id)||{}).t||null;
+        if(x&&x!==orig)rulesState.edits[r.id]=x;else delete rulesState.edits[r.id];persist()};d.appendChild(ta);ta.focus();b.textContent="Wording saved as you type"};
     P.appendChild(d);});
   const a=document.createElement("div");a.className="addrule";a.innerHTML=`<b>Add a rule you plan by</b><textarea id="newRule" rows="3" placeholder="e.g. Never put a 1:8 on a crossing pole"></textarea><button id="addRule">Add rule</button>`;P.appendChild(a);
   $("addRule").onclick=()=>{const t=$("newRule").value.trim();if(!t)return;rulesState.mine.push(t);save();renderRules();toast("Rule added")};
 }
 
-/* ---------- send / export ---------- */
-function payloadFor(s){const t=st(s),M=t.mine;
-  return {app:"PON Lab v2",scene:s.id,title:s.title,tag:s.tag||"",homes:s.homes,claude_plan:s.claude.v||"",
+/* ---------- F2 elements, picking, reasons ---------- */
+function elems(side){const o=[];
+  if(side==="claude"){const C=CL();
+    C.poles.forEach(p=>o.push({k:"claude:"+p.id,t:"pole",id:p.id,xy:p.xy}));
+    C.cps.forEach(q=>o.push({k:"claude:"+q.id,t:"cp",id:q.id,xy:q.xy}));
+    o.push({k:"claude:x16",t:"x16",id:"x16",xy:C.x16.xy});
+    C.spans.forEach(sp=>o.push({k:"claude:"+sp.id,t:"span",id:sp.id,a:sp.a,b:sp.b}));
+    C.drops.forEach(d=>o.push({k:"claude:"+d.id,t:"drop",id:d.id,pts:d.pts}));return o}
+  const M=cur.st.mine,R=M.reg;
+  M.poles.forEach((p,i)=>{if(p)o.push({k:"yours:p"+(i+1),t:"pole",id:"p"+(i+1),xy:p})});
+  M.cps.forEach(pi=>{const p=M.poles[pi];if(p)o.push({k:"yours:"+R.c[pi],t:"cp",id:R.c[pi],xy:p})});
+  if(M.s16)o.push({k:"yours:x16",t:"x16",id:"x16",xy:M.s16});
+  M.spans.forEach(([a,b])=>{if(M.poles[a]&&M.poles[b]){const id=R.s[a+"-"+b];o.push({k:"yours:"+id,t:"span",id,a:M.poles[a],b:M.poles[b]})}});
+  M.drops.forEach(d=>{const h=cur.homesXY[d.h],p=M.poles[M.cps[d.c]];if(h&&p){const id=R.d[d.h];o.push({k:"yours:"+id,t:"drop",id,pts:[h,p]})}});
+  return o}
+const TNAME={pole:"pole",cp:"1:8",x16:"1:16",span:"cable span",drop:"drop"};
+function elLabel(e){const side=e.k.split(":")[0]==="claude"?"Claude":"Yours";let x=`${side} ${TNAME[e.t]} ${e.id}`;
+  if(e.t==="span")x+=` (${Math.round(dist(e.a,e.b))} m)`;if(e.t==="drop")x+=` (${Math.round(dist(e.pts[0],e.pts[e.pts.length-1]))} m)`;return x}
+function elDist(e,p){if(e.xy)return dist(e.xy,p);if(e.t==="span")return segD(p,e.a,e.b);let m=1e9;for(let i=1;i<e.pts.length;i++)m=Math.min(m,segD(p,e.pts[i-1],e.pts[i]));return m}
+function pickAt(p,sides){const thr={pole:12,cp:14,x16:14,span:10,drop:7};let best=null,bs=1;
+  sides.forEach(sd=>elems(sd).forEach(e=>{const s=elDist(e,p)/(thr[e.t]*U());if(s<bs){bs=s;best=e}}));return best}
+function pickTap(p){const sides=tab==="claude"?["claude"]:tab==="yours"?["yours"]:["claude","yours"];const e=pickAt(p,sides);if(!e)return;hl=new Set([e.k]);draw();openReason(e.k,elLabel(e))}
+let rsKey=null,rsCur=null;
+function openReason(key,label){rsKey=key;const R=cur.st.reasons[key]||{chips:[],note:""};rsCur={chips:R.chips.slice(),note:R.note||""};
+  $("rsTitle").textContent=label;const C=$("rsChips");C.innerHTML="";
+  REASONS.forEach(([id,name])=>{const b=document.createElement("button");b.textContent=name;b.classList.toggle("on",rsCur.chips.includes(id));
+    b.onclick=()=>{const k=rsCur.chips.indexOf(id);if(k>=0)rsCur.chips.splice(k,1);else rsCur.chips.push(id);b.classList.toggle("on")};C.appendChild(b)});
+  $("rsNote").value=rsCur.note;$("rsSheet").hidden=false}
+function rsClose(){$("rsSheet").hidden=true;hl=new Set();draw()}
+$("rsSave").onclick=()=>{const note=$("rsNote").value.trim();$("rsNote").blur();if(rsCur.chips.length||note)cur.st.reasons[rsKey]={chips:rsCur.chips,note,t:Date.now()};else delete cur.st.reasons[rsKey];save();rsClose();toast("Reason saved")};
+$("rsClear").onclick=()=>{delete cur.st.reasons[rsKey];save();rsClose()};
+$("rsSheet").onclick=e=>{if(e.target.id==="rsSheet")rsClose()};
+/* erasing something you copied from Claude: offer (never force) a reason on Claude's element */
+function eraseWhy(p){const e=pickAt(p,["yours"]);if(!e)return null;const C=CL();let c=null;
+  if(e.t==="pole"||e.t==="cp")c=elems("claude").find(q=>q.t===e.t&&dist(q.xy,e.xy)<=1.5);
+  else if(e.t==="span"){const f=spanFrac({a:e.a,b:e.b},C.spans);if(f.f>=.5)c=elems("claude").filter(q=>q.t==="span").map(q=>[q,segD(mid(e.a,e.b),q.a,q.b)]).sort((x,y)=>x[1]-y[1])[0][0]}
+  else if(e.t==="drop")c=elems("claude").find(q=>q.t==="drop"&&dist(q.pts[0],e.pts[0])<=.6);
+  return c?{k:c.k,label:elLabel(c)}:null}
+const mid=(a,b)=>[(a[0]+b[0])/2,(a[1]+b[1])/2];
+let t2=null;
+function offerWhy(w){const T=$("toast2");T.hidden=false;T.innerHTML="";const s=document.createElement("span");s.textContent="You removed something Claude drew.";const b=document.createElement("button");b.textContent="Say why";
+  b.onclick=()=>{T.hidden=true;openReason(w.k,w.label)};T.appendChild(s);T.appendChild(b);clearTimeout(t2);t2=setTimeout(()=>{T.hidden=true},7000)}
+function copyClaude(){const C=CL(),M=cur.st.mine;if(M.poles.some(Boolean)||M.spans.length){toast("Clear your drawing first");return}
+  snapshot();const idx=xy=>{let i=M.poles.findIndex(q=>q&&dist(q,xy)<.3);if(i<0){M.poles.push([xy[0],xy[1]]);i=M.poles.length-1}return i};
+  C.poles.forEach(p=>idx(p.xy));C.spans.forEach(sp=>{const a=idx(sp.a),b=idx(sp.b);if(a!==b)M.spans.push([a,b])});
+  C.cps.forEach(q=>{const i=idx(q.xy);if(!M.cps.includes(i))M.cps.push(i)});
+  M.s16=[C.x16.xy[0],C.x16.xy[1]];
+  C.drops.forEach(d=>{const h=cur.homesXY.findIndex(q=>dist(q,d.pts[0])<1.5);const last=d.pts[d.pts.length-1];const ci=M.cps.findIndex(pi=>dist(M.poles[pi],last)<.5);if(h>=0&&ci>=0&&!M.drops.some(x=>x.h===h))M.drops.push({h,c:ci})});
+  save();draw();renderHome();toast("Claude's plan copied into yours")}
+
+/* ---------- F3 diff (same method as lab3/diff3.py) ---------- */
+function pieces(a,b){const n=Math.max(1,Math.ceil(+dist(a,b).toFixed(6)));const o=[];for(let k=0;k<n;k++)o.push([a[0]+(b[0]-a[0])*(k+.5)/n,a[1]+(b[1]-a[1])*(k+.5)/n]);return o}
+function spanFrac(sg,other){const ps=pieces(sg.a,sg.b);let k=0;ps.forEach(p=>{if(other.some(o=>segD(p,o.a,o.b)<=.5))k++});return{f:k/ps.length,n:ps.length}}
+function matchPts(A,B,tol){const c=[];A.forEach((a,i)=>B.forEach((b,j)=>{const d=dist(a.xy,b.xy);if(d<=tol)c.push([d,i,j])}));c.sort((x,y)=>x[0]-y[0]||x[1]-y[1]||x[2]-y[2]);
+  const ua=new Set(),ub=new Set(),pairs=[];c.forEach(([d,i,j])=>{if(ua.has(i)||ub.has(j))return;ua.add(i);ub.add(j);pairs.push([A[i],B[j],d])});
+  return{pairs,ua:A.filter((_,i)=>!ua.has(i)),ub:B.filter((_,j)=>!ub.has(j))}}
+function diffNow(){const C=CL(),M=cur.st.mine;
+  const key=cur.id+"|"+cur.ri+"|"+JSON.stringify([M.poles,M.spans,M.cps,M.s16]);if(diffCache&&diffCache.key===key)return diffCache.rows;
+  const rows=[],r1=v=>Math.round(v*10)/10;
+  const ys=[];M.spans.forEach(([a,b])=>{if(M.poles[a]&&M.poles[b])ys.push({id:M.reg.s[a+"-"+b],a:M.poles[a],b:M.poles[b]})});
+  C.spans.forEach(sg=>{const f=spanFrac(sg,ys).f;rows.push({element:"claude:"+sg.id,kind:f>=.5?"kept":"removed",type:"span",len:r1(dist(sg.a,sg.b)),a:sg.a,b:sg.b,xy:mid(sg.a,sg.b)})});
+  ys.forEach(sg=>{const f=spanFrac(sg,C.spans).f;if(f<.5)rows.push({element:"yours:"+sg.id,kind:"added",type:"span",len:r1(dist(sg.a,sg.b)),a:sg.a,b:sg.b,xy:mid(sg.a,sg.b)})});
+  const ptype=(typ,A,B)=>{const m=matchPts(A,B,1.5);m.pairs.forEach(([a])=>rows.push({element:"claude:"+a.id,kind:"kept",type:typ,xy:a.xy}));
+    m.ua.forEach(a=>rows.push({element:"claude:"+a.id,kind:"removed",type:typ,xy:a.xy}));m.ub.forEach(b=>rows.push({element:"yours:"+b.id,kind:"added",type:typ,xy:b.xy}))};
+  ptype("pole",C.poles.map(p=>({id:p.id,xy:p.xy})),M.poles.map((p,i)=>p&&!(M.s16&&dist(p,M.s16)<1)?{id:"p"+(i+1),xy:p}:null).filter(Boolean)); // Claude's pole list leaves out the pole on the 1:16, so does yours
+  ptype("cp",C.cps.map(q=>({id:q.id,xy:q.xy})),M.cps.filter(pi=>M.poles[pi]).map(pi=>({id:M.reg.c[pi],xy:M.poles[pi]})));
+  if(M.s16){if(dist(C.x16.xy,M.s16)<=1.5)rows.push({element:"claude:x16",kind:"kept",type:"x16",xy:C.x16.xy});
+    else{rows.push({element:"claude:x16",kind:"removed",type:"x16",xy:C.x16.xy});rows.push({element:"yours:x16",kind:"added",type:"x16",xy:M.s16})}}
+  diffCache={key,rows};return rows}
+function drawCompare(gg,u,pr,cr){const rows=diffNow(),lw=Math.max(.6,1.7*u),col={kept:"#2e8b57",removed:"#d33c2f",added:"#1d5fbf"};
+  rows.filter(r=>r.type==="span").forEach(r=>el("line",{x1:r.a[0],y1:r.a[1],x2:r.b[0],y2:r.b[1],stroke:col[r.kind],"stroke-width":lw,"stroke-linecap":"round","stroke-dasharray":r.kind==="removed"?(4*u)+" "+(2.5*u):""},gg));
+  rows.filter(r=>r.type==="pole").forEach(r=>el("circle",{cx:r.xy[0],cy:r.xy[1],r:pr*(r.kind==="kept"?.6:.85),fill:r.kind==="kept"?"#fff":col[r.kind],stroke:col[r.kind],"stroke-width":Math.max(.3,.9*u)},gg));
+  rows.filter(r=>r.type==="cp").forEach(r=>el("rect",{x:r.xy[0]-cr/2,y:r.xy[1]-cr/2,width:cr,height:cr,fill:r.kind==="kept"?"#ffd400":"none",stroke:col[r.kind],"stroke-width":Math.max(.6,1.8*u)},gg));
+  rows.filter(r=>r.type==="x16").forEach(r=>el("circle",{cx:r.xy[0],cy:r.xy[1],r:cr*.7,fill:r.kind==="kept"?"#e31a1c":"none",stroke:col[r.kind],"stroke-width":Math.max(.6,1.8*u)},gg))}
+function halo(g,e,color,u,pr,thin){if(e.xy)el("circle",{cx:e.xy[0],cy:e.xy[1],r:pr*(thin?1.5:2),fill:"none",stroke:color,"stroke-width":Math.max(.5,(thin?1.2:2.4)*u)},g);
+  else el("polyline",{points:pts(e.pts||[e.a,e.b]),fill:"none",stroke:color,"stroke-width":Math.max(1,(thin?3:6)*u),opacity:thin?.5:.45,"stroke-linecap":"round","stroke-linejoin":"round"},g)}
+function drawMarks(u,pr,cr){const m={};elems("claude").concat(elems("yours")).forEach(e=>m[e.k]=e);
+  const vis=k=>tab==="compare"||(tab==="claude"&&k.indexOf("claude:")===0)||(tab==="yours"&&k.indexOf("yours:")===0);const g=el("g",{},svg);
+  Object.keys(cur.st.reasons).forEach(k=>{const e=m[k];if(e&&vis(k))halo(g,e,"#7b3fb0",u,pr,true)});
+  hl.forEach(k=>{const e=m[k];if(e&&vis(k))halo(g,e,"#ffd400",u,pr)})}
+function zoomTo(keys){const m={};elems("claude").concat(elems("yours")).forEach(e=>m[e.k]=e);let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+  keys.forEach(k=>{const e=m[k];if(!e)return;(e.xy?[e.xy]:e.pts?e.pts:[e.a,e.b]).forEach(q=>{x0=Math.min(x0,q[0]);y0=Math.min(y0,q[1]);x1=Math.max(x1,q[0]);y1=Math.max(y1,q[1])})});
+  if(x0>1e8)return;const r=svg.getBoundingClientRect(),a=r.width/Math.max(r.height,1);let w=Math.max(x1-x0+30,60),h=Math.max(y1-y0+30,60/a);if(w/h<a)w=h*a;else h=w/a;
+  vb={x:(x0+x1)/2-w/2,y:(y0+y1)/2-h/2,w,h};setVB()}
+
+/* ---------- F5 numbers for Yours (same terms as snake3.rank; an estimate in the browser) ---------- */
+function inPoly(p,poly){let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j];if((a[1]>p[1])!==(b[1]>p[1])&&p[0]<(b[0]-a[0])*(p[1]-a[1])/(b[1]-a[1])+a[0])c=!c}return c}
+function edgeD(p,poly){let m=1e9;for(let i=1;i<poly.length;i++)m=Math.min(m,segD(p,poly[i-1],poly[i]));return m}
+function segPt(a,b,c,d){const r=[b[0]-a[0],b[1]-a[1]],s=[d[0]-c[0],d[1]-c[1]],den=r[0]*s[1]-r[1]*s[0];if(!den)return null;const t=((c[0]-a[0])*s[1]-(c[1]-a[1])*s[0])/den,v=((c[0]-a[0])*r[1]-(c[1]-a[1])*r[0])/den;return t>=0&&t<=1&&v>=0&&v<=1?[a[0]+t*r[0],a[1]+t*r[1]]:null}
+function yoursTerms(){const s=cur,M=cur.st.mine;
+  const key=cur.id+JSON.stringify([M.poles,M.spans,M.cps,M.drops,M.s16]);if(scoreCache&&scoreCache.key===key)return scoreCache.v;
+  const T={};TERMW.forEach(([k])=>T[k]=0);
+  const sp=M.spans.filter(([a,b])=>M.poles[a]&&M.poles[b]);
+  if(!M.poles.some(Boolean)&&!M.drops.length){scoreCache={key,v:null};return null}
+  T.cable_m=sp.reduce((x,[a,b])=>x+dist(M.poles[a],M.poles[b]),0);T.poles=M.poles.filter(Boolean).length;
+  const roadHits=(a,b)=>{const o=[];s.roads.forEach(r=>{for(let i=1;i<r.length;i++){const q=segPt(a,b,r[i-1],r[i]);if(q)o.push({q,r0:r[i-1],r1:r[i]})}});return o};
+  const spanX=[];sp.forEach(([a,b])=>roadHits(M.poles[a],M.poles[b]).forEach(h=>spanX.push(h.q)));
+  M.drops.forEach(d=>{const h=s.homesXY[d.h],p=M.poles[M.cps[d.c]];if(!h||!p)return;const L=dist(h,p);if(L>56)T.drops_over_56++;
+    const hx=roadHits(h,p);if(hx.length&&!hx.some(x=>spanX.some(q=>dist(q,x.q)<12)))T.drops_cross_road_alone++});
+  let out=0;sp.forEach(([a,b])=>pieces(M.poles[a],M.poles[b]).forEach(p=>{if(!inPoly(p,s.pon)&&edgeD(p,s.pon)>3)out++}));T.outside_pon_m=out;
+  for(let i=0;i<sp.length;i++)for(let j=i+1;j<sp.length;j++){const[a,b]=sp[i],[c,d]=sp[j];if(a===c||a===d||b===c||b===d)continue;if(segX(M.poles[a],M.poles[b],M.poles[c],M.poles[d]))T.self_crossings++}
+  const adj={};sp.forEach(([a,b])=>{(adj[a]=adj[a]||new Set()).add(b);(adj[b]=adj[b]||new Set()).add(a)});
+  const cpset=new Set(M.cps);let start=-1;if(M.s16){let bd=1e9;Object.keys(adj).forEach(k=>{const dd=dist(M.poles[k],M.s16);if(dd<bd){bd=dd;start=+k}})}
+  Object.keys(adj).forEach(k=>{k=+k;const n=adj[k].size;if((n>2||(k===start&&n>1))&&!cpset.has(k)&&k!==start)T.branches_not_at_cp++;
+    if(n===2){const[a,b]=[...adj[k]].map(i=>M.poles[i]),o=M.poles[k],v1=[a[0]-o[0],a[1]-o[1]],v2=[b[0]-o[0],b[1]-o[1]];const c=(v1[0]*v2[0]+v1[1]*v2[1])/((Math.hypot(...v1)*Math.hypot(...v2))||1);if(c>Math.cos(Math.PI/6))T.sharp_turns++}});
+  const leaves=Object.keys(adj).filter(k=>adj[k].size===1&&+k!==start).length;T.extra_spurs=Math.max(0,Math.max(0,leaves-1)-1);
+  sp.forEach(([a,b])=>{let worst=0;roadHits(M.poles[a],M.poles[b]).forEach(h=>{const sv=[M.poles[b][0]-M.poles[a][0],M.poles[b][1]-M.poles[a][1]],rv=[h.r1[0]-h.r0[0],h.r1[1]-h.r0[1]];
+    const c=Math.abs(sv[0]*rv[0]+sv[1]*rv[1])/((Math.hypot(...sv)*Math.hypot(...rv))||1);worst=Math.max(worst,90-Math.acos(Math.min(1,c))*180/Math.PI)});if(worst>15)T.skew_crossings++});
+  if(!s._ebb)s._ebb=s.erven.map(e=>{let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;e.forEach(q=>{x0=Math.min(x0,q[0]);y0=Math.min(y0,q[1]);x1=Math.max(x1,q[0]);y1=Math.max(y1,q[1])});return[x0,y0,x1,y1]});
+  let thr=0;sp.forEach(([a,b])=>{const A=M.poles[a],B=M.poles[b],n=Math.max(1,Math.ceil(dist(A,B)*2));for(let k=0;k<n;k++){const p=[A[0]+(B[0]-A[0])*(k+.5)/n,A[1]+(B[1]-A[1])*(k+.5)/n];
+    for(let i=0;i<s.erven.length;i++){const bb=s._ebb[i];if(p[0]<bb[0]||p[0]>bb[2]||p[1]<bb[1]||p[1]>bb[3])continue;if(inPoly(p,s.erven[i])&&edgeD(p,s.erven[i])>1){thr+=.5;break}}}});T.through_erven_m=thr;
+  T.s16_moved_m=null;scoreCache={key,v:T};return T}
+
+/* ---------- panels: Why / Score / Changes / Rounds / A-B ---------- */
+const SECS=[["why","Why"],["score","Score"],["changes","Changes"],["rounds","Rounds"],["ab","A/B"]];
+$("pbtn").onclick=()=>{popen=!popen;renderPanel();requestAnimationFrame(()=>{if(cur&&vb)fit()})};
+function renderPanel(){const P=$("panel");if(!cur||tab==="rules"||!popen){P.hidden=true;$("pbtn").classList.toggle("on",false);return}
+  P.hidden=false;const old=P.querySelector(".pbody");const top=old?old.scrollTop:0;P.innerHTML="";
+  const H=document.createElement("div");H.className="phead";
+  SECS.filter(([k])=>k!=="ab"||(cur.ab||[]).length).forEach(([k,n])=>{const b=document.createElement("button");b.textContent=n;b.classList.toggle("on",psec===k);b.onclick=()=>{psec=k;renderPanel()};H.appendChild(b)});
+  const x=document.createElement("button");x.className="x";x.textContent="\u00d7";x.setAttribute("aria-label","Close panel");x.onclick=()=>$("pbtn").click();H.appendChild(x);P.appendChild(H);
+  const B=document.createElement("div");B.className="pbody";P.appendChild(B);
+  if(psec==="ab"&&!(cur.ab||[]).length)psec="why";
+  ({why:pWhy,score:pScore,changes:pChanges,rounds:pRounds,ab:pAB})[psec](B);B.scrollTop=top}
+const mk=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e};
+function btn(txt,fn,on,cls){const b=mk("button",(on?"on ":"")+(cls||""),txt);b.onclick=fn;return b}
+function pWhy(B){const C=CL(),why=C.why||[];B.appendChild(mk("div","pnote","Why I did it. Tap Show to see it on the map, then mark each one right or wrong."));
+  if(!why.length){B.appendChild(mk("div","pnote","No reasons were recorded for this round."));return}
+  why.forEach(w=>{const v=cur.st.why[w.id]||{};const r=mk("div","prow");const tx=mk("div","tx");const t=mk("span","",w.text);tx.appendChild(t);tx.appendChild(mk("span","val",w.value||""));r.appendChild(tx);
+    const b=mk("div","b");b.appendChild(btn("Show",()=>{hl=new Set((w.els||[]).map(i=>"claude:"+i));if(tab!=="claude"&&tab!=="compare")setTab("claude");zoomTo([...hl]);draw()}));
+    b.appendChild(btn("\u2713 Right",()=>{cur.st.why[w.id]={v:v.v==="ok"?null:"ok",note:v.note||""};save()},v.v==="ok","ok"));
+    b.appendChild(btn("\u2717 Wrong",()=>{cur.st.why[w.id]={v:v.v==="no"?null:"no",note:v.note||""};save()},v.v==="no","no"));r.appendChild(b);
+    if(v.v){const ta=mk("textarea");ta.rows=2;ta.placeholder="Note (optional)";ta.value=v.note||"";ta.oninput=()=>{cur.st.why[w.id].note=ta.value;persist()};r.appendChild(ta)}
+    B.appendChild(r)})}
+function pScore(B){const C=CL(),sc=C.score,Y=yoursTerms();
+  if(!sc){B.appendChild(mk("div","pnote","No score was recorded for this round."));return}
+  B.appendChild(mk("div","pnote","Lower is better. Terms are the ones I rank my own plans by. Your numbers are worked out in the page from what you drew (estimate)."));
+  const tb=mk("table","ptab");tb.innerHTML="<tr><th>Term</th><th>Claude</th><th>pts</th><th>Yours</th><th>pts</th></tr>";let yt=0;
+  sc.terms.forEach(t=>{const yv=Y?Y[t.k]:null;const yp=yv==null?null:yv*t.w;if(yp!=null)yt+=yp;const f=v=>v==null?"\u2013":(Math.round(v*10)/10);
+    const tr=document.createElement("tr");[t.label,f(t.value),f(t.pts),f(yv),f(yp)].forEach(x=>tr.appendChild(mk("td","",String(x))));tb.appendChild(tr)});
+  const tr=document.createElement("tr");tr.className="tot";["Total",null,Math.round(sc.total),null,Y?Math.round(yt):"\u2013"].forEach(x=>tr.appendChild(mk("td","",x==null?"":String(x))));tb.appendChild(tr);B.appendChild(tb);
+  if(!Y)B.appendChild(mk("div","pnote","Draw your plan to see your numbers."));
+  if(Y)B.appendChild(mk("div","pnote","The 1:16 move term is blank for yours (it needs the PON's first marker)."))}
+function pChanges(B){const rows=diffNow(),M=cur.st.mine;const has=M.spans.length||M.poles.some(Boolean);
+  const cnt=k=>rows.filter(r=>r.kind===k&&r.type==="span").length;
+  B.appendChild(mk("div","pnote",has?`Cable: ${cnt("kept")} kept \u00b7 ${cnt("removed")} removed \u00b7 ${cnt("added")} added. Green stayed, red went, blue is new. Agree means the change is right.`:"Draw or copy your plan first, then this lists what you changed."));
+  if(!has)return;
+  const order={removed:0,added:1,kept:2},tord={x16:0,span:1,cp:2,pole:3};
+  const list=rows.slice().sort((a,b)=>order[a.kind]-order[b.kind]||tord[a.type]-tord[b.type]);
+  const row=r=>{const v=cur.st.changes[r.element]||{},has=cur.st.reasons[r.element];const d=mk("div","prow");const tx=mk("div","tx");tx.appendChild(mk("span","kind "+r.kind,r.kind));
+    tx.appendChild(mk("span","",(TNAME[r.type]||r.type)+" "+r.element.split(":")[1]+(r.len?` \u00b7 ${r.len} m`:"")+(r.element.indexOf("yours:")===0?" (yours)":"")));d.appendChild(tx);
+    const b=mk("div","b");b.appendChild(btn("Zoom",()=>{hl=new Set([r.element]);zoomTo([r.element]);draw()}));
+    b.appendChild(btn("Agree",()=>{cur.st.changes[r.element]={v:v.v==="agree"?null:"agree"};save()},v.v==="agree","ok"));
+    b.appendChild(btn("Disagree",()=>{cur.st.changes[r.element]={v:v.v==="disagree"?null:"disagree"};save()},v.v==="disagree","no"));
+    b.appendChild(btn(has?"Reason \u2713":"Reason",()=>{hl=new Set([r.element]);draw();openReason(r.element,(r.element.indexOf("yours:")===0?"Yours ":"Claude ")+(TNAME[r.type]||r.type)+" "+r.element.split(":")[1])},!!has,"rs"));d.appendChild(b);return d};
+  list.filter(r=>r.kind!=="kept").forEach(r=>B.appendChild(row(r)));
+  const kept=list.filter(r=>r.kind==="kept");if(kept.length){const dt=mk("details");dt.appendChild(mk("summary","",`${kept.length} kept (unchanged)`));kept.forEach(r=>dt.appendChild(row(r)));B.appendChild(dt)}}
+function pRounds(B){const R=cur.rounds;B.appendChild(mk("div","pnote","Each round is one of my drafts. Tap one to see it on the map; Compare then shows your plan against that draft."));
+  R.slice().reverse().forEach((r,k)=>{const i=R.length-1-k,d=mk("div","prow");const tx=mk("div","tx");tx.appendChild(mk("span","",`Round ${r.round}${r.date?" \u00b7 "+r.date:""}${i===R.length-1?" \u00b7 latest":""}`));tx.appendChild(mk("span","val",r.claude.stats&&r.claude.stats.cable_m?Math.round(r.claude.stats.cable_m)+" m":""));d.appendChild(tx);
+    if(r.note)d.appendChild(mk("div","pnote",r.note));const b=mk("div","b");b.appendChild(btn(cur.ri===i?"Viewing":"View this round",()=>{cur.ri=i;hl=new Set();diffCache=null;draw();renderPanel()},cur.ri===i,"ok"));d.appendChild(b);B.appendChild(d)})}
+function abThumb(v){const s=cur,sv=el("svg",{viewBox:`0 0 ${s.w} ${s.h}`,preserveAspectRatio:"xMidYMid meet"});sv.style.cssText="width:100%;background:#fff;border-radius:8px;border:1px solid var(--line)";const k=Math.max(s.w,s.h);
+  s.erven.forEach(e=>el("polygon",{points:pts(e),fill:"none",stroke:"#c8c8c8","stroke-width":k/700},sv));el("polygon",{points:pts(s.pon),fill:"none",stroke:"#7b3fb0","stroke-width":k/300,"stroke-dasharray":"6 3"},sv);
+  (v.dc||[]).forEach(l=>el("polyline",{points:pts(l),fill:"none",stroke:"#e31a1c","stroke-width":k/220,"stroke-linejoin":"round"},sv));(v.spur||[]).forEach(l=>el("polyline",{points:pts(l),fill:"none",stroke:"#1f78b4","stroke-width":k/220,"stroke-linejoin":"round"},sv));
+  (v.poles||[]).forEach(p=>el("circle",{cx:p.xy[0],cy:p.xy[1],r:k/260,fill:"#fff",stroke:"#111","stroke-width":k/900},sv));(v.cps||[]).forEach(q=>el("rect",{x:q.xy[0]-k/200,y:q.xy[1]-k/200,width:k/100,height:k/100,fill:"#ffd400",stroke:"#111","stroke-width":k/900},sv));
+  el("circle",{cx:s.splitter[0],cy:s.splitter[1],r:k/110,fill:"#e31a1c",stroke:"#111","stroke-width":k/700},sv);return sv}
+let abBig=false;
+function pAB(B){B.appendChild(mk("div","pnote","Two of my options that differ mainly in one thing. Pick the one you would build, and say why."));
+  B.appendChild(btn(abBig?"Side by side":"Bigger",()=>{abBig=!abBig;renderPanel()},false,"mini"));
+  cur.ab.forEach(q=>{const a=cur.st.ab[q.id]||{};const d=mk("div","prow");d.appendChild(mk("div","tx",null)).appendChild(mk("b","",q.feature||"Which is better?"));
+    if(q.example)d.appendChild(mk("div","pnote","Example only, not a real alternative: it just tests this screen."));
+    const g=mk("div","ab2"+(abBig?" big":""));[["a",q.a],["b",q.b]].forEach(([k,v])=>{const f=mk("figure");f.appendChild(mk("figcaption","",(v.label||k.toUpperCase())));f.appendChild(abThumb(v));g.appendChild(f)});d.appendChild(g);
+    const b=mk("div","b");["a","b"].forEach(k=>b.appendChild(btn("Pick "+k.toUpperCase(),()=>{cur.st.ab[q.id]={pick:a.pick===k?null:k,chips:a.chips||[],note:a.note||""};save()},a.pick===k,"ok")));d.appendChild(b);
+    if(a.pick){const c=mk("div","rchips");REASONS.forEach(([id,n])=>{const x=mk("button",(a.chips||[]).includes(id)?"on":"",n);x.onclick=()=>{const cc=(a.chips||[]).slice();const i=cc.indexOf(id);if(i>=0)cc.splice(i,1);else cc.push(id);cur.st.ab[q.id]=Object.assign({},a,{chips:cc});save()};c.appendChild(x)});d.appendChild(c);
+      const ta=mk("textarea");ta.rows=2;ta.placeholder="Why? (optional)";ta.value=a.note||"";ta.oninput=()=>{cur.st.ab[q.id].note=ta.value;persist()};d.appendChild(ta)}
+    B.appendChild(d)})}
+window.__ponlab={diffNow:()=>diffNow(),terms:()=>yoursTerms(),get cur(){return cur},get tab(){return tab}};
+
+/* ---------- F9 send / export ---------- */
+function payloadFor(s){const t=st(s),M=t.mine,R=M.reg,last=s.rounds[s.rounds.length-1].round;
+  const viewed=(cur&&cur.id===s.id&&s.rounds[cur.ri])?s.rounds[cur.ri].round:last;
+  return {app:"PON Lab v3",schema:SCHEMA,sent_at:new Date().toISOString(),scene:s.id,title:s.title,tag:s.tag||"",homes:s.homes,claude_plan:s.claude.v||"",round:last,claude_round:viewed,
     pins:t.pins.map((p,i)=>({n:i+1,tab:p.tab,kind:p.kind,xy:p.xy,rules:p.rules,note:p.note})),
-    yours:{s16:M.s16,poles:M.poles.map((p,i)=>p?[i,...p]:null).filter(Boolean),spans:M.spans,cps:M.cps,drops:M.drops.map(d=>[d.h,d.c])}}}
+    yours:{s16:M.s16,poles:M.poles.map((p,i)=>p?[i,...p]:null).filter(Boolean),spans:M.spans,cps:M.cps,drops:M.drops.map(d=>[d.h,d.c]),
+      ids:{spans:M.spans.map(([a,b])=>R.s[a+"-"+b]),cps:M.cps.map(p=>R.c[p]),drops:M.drops.map(d=>R.d[d.h])}},
+    reasons:t.reasons,changes:t.changes,why:t.why,
+    ab:(s.ab||[]).map(q=>({id:q.id,feature:q.feature,example:!!q.example,pick:(t.ab[q.id]||{}).pick||null,chips:(t.ab[q.id]||{}).chips||[],note:(t.ab[q.id]||{}).note||""})),
+    rules:{votes:rulesState.votes,notes:rulesState.notes,mine:rulesState.mine,edits:rulesState.edits}}}
+const worked=p=>p.pins.length||p.yours.drops.length||p.yours.poles.length||Object.keys(p.reasons).length||Object.keys(p.changes).length||Object.keys(p.why).length||p.ab.some(a=>a.pick);
 function download(name,blob){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
+async function postInbox(payload){
+  if(!WORKER_URL) return {ok:false,why:"the inbox is not set up yet"};
+  const body=JSON.stringify(payload); if(body.length>MAX_BYTES) return {ok:false,why:"too big for the inbox (2 MB)"};
+  if(/supabase\.co/.test(WORKER_URL)){ // Supabase table: insert-only for this key, nothing readable back
+    try{const r=await fetch(WORKER_URL,{method:"POST",headers:{"content-type":"application/json","apikey":SUBMIT_KEY,"prefer":"return=minimal"},
+      body:JSON.stringify({scene:String(payload.scene||"?").slice(0,40),round:payload.round??null,schema_v:payload.schema??null,payload})});
+      return r.ok?{ok:true,id:""}:{ok:false,why:"the inbox said "+r.status}}
+    catch(e){return {ok:false,why:"could not reach the inbox"}}}
+  try{const r=await fetch(WORKER_URL.replace(/\/$/,"")+"/submit",{method:"POST",headers:{"content-type":"application/json","x-submit-key":SUBMIT_KEY},body});
+    if(!r.ok) return {ok:false,why:"the inbox said "+r.status}; let j={};try{j=await r.json()}catch(e){} return {ok:true,id:j.id||""}}
+  catch(e){return {ok:false,why:"could not reach the inbox"}}}
 let lastPng=null;
-function doSend(){
-  const s=cur; const payload=payloadFor(s); payload.rules={votes:rulesState.votes,notes:rulesState.notes,mine:rulesState.mine};
+async function doSend(){
+  const s=cur; const payload=payloadFor(s);
   $("sendTxt").value="PONLAB "+JSON.stringify(payload);
-  $("sendHow").textContent=DESK.matches?"Download files saves the picture and the data file. Drop both into Relay on the laptop, or Copy text and paste it.":"1. Long-press the picture and Save it (or take a screenshot). 2. Tap Copy text. 3. Paste both into Relay.";
+  $("sendHow").textContent=DESK.matches?"Download files saves the picture and the data file. Drop both into Relay on the laptop, or Copy text and paste it.":"If it did not send: 1. Long-press the picture and Save it (or take a screenshot). 2. Tap Copy text. 3. Paste both into Relay.";
+  $("sendStatus").textContent=WORKER_URL?"Sending to Claude's inbox...":"The inbox is not set up yet: use Download files or Copy text.";
   const prevTab=tab; const clone=svg.cloneNode(true); clone.setAttribute("viewBox",`0 0 ${s.w} ${s.h}`);
   const Wd=1600,Hd=Math.round(1600*s.h/s.w); clone.setAttribute("width",Wd);clone.setAttribute("height",Hd);
   const img=new Image(); img.onload=()=>{const c=document.createElement("canvas");c.width=Wd;c.height=Hd+60;const g=c.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,c.width,c.height);g.drawImage(img,0,60,Wd,Hd);
@@ -638,6 +924,7 @@ function doSend(){
     lastPng=c.toDataURL("image/png"); $("sendImg").src=lastPng;};
   img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(new XMLSerializer().serializeToString(clone));
   $("sendSheet").hidden=false;
+  if(WORKER_URL){const r=await postInbox(payload);$("sendStatus").textContent=r.ok?"Sent to Claude's inbox"+(r.id?" ("+r.id+")":"")+". You can close this.":"Not sent: "+r.why+". Use Download files or Copy text instead."}
 }
 $("send").onclick=doSend; $("send2").onclick=doSend;
 $("sendDl").onclick=()=>{const n="ponlab_"+cur.title.replace(/\s+/g,"_");
@@ -645,15 +932,17 @@ $("sendDl").onclick=()=>{const n="ponlab_"+cur.title.replace(/\s+/g,"_");
   if(lastPng) fetch(lastPng).then(r=>r.blob()).then(b=>download(n+".png",b)); toast("Saved to Downloads")};
 $("sendClose").onclick=()=>$("sendSheet").hidden=true;
 $("sendCopy").onclick=async()=>{const t=$("sendTxt");try{await navigator.clipboard.writeText(t.value);toast("Copied, paste it in Relay")}catch(e){t.focus();t.select();try{document.execCommand("copy");toast("Copied, paste it in Relay")}catch(e2){toast("Select the text and copy it")}}};
-$("expAll").onclick=()=>{const all={app:"PON Lab v2",exported:new Date().toISOString(),rules:{votes:rulesState.votes,notes:rulesState.notes,mine:rulesState.mine},
-  scenes:SC.map(payloadFor).filter(p=>p.pins.length||p.yours.drops.length||p.yours.poles.length)};
+$("expAll").onclick=()=>{const all={app:"PON Lab v3",schema:SCHEMA,exported:new Date().toISOString(),rules:{votes:rulesState.votes,notes:rulesState.notes,mine:rulesState.mine,edits:rulesState.edits},
+  scenes:SC.map(payloadFor).filter(worked)};
   download("ponlab_all_"+new Date().toISOString().slice(0,10)+".json",new Blob(["PONLAB "+JSON.stringify(all)],{type:"application/json"}));toast(`Exported ${all.scenes.length} PONs`)};
 $("clearMine").onclick=()=>{if(!cur)return; if(!cur.st.mine.poles.some(Boolean)&&!cur.st.mine.drops.length){toast("Nothing drawn yet");return}
   snapshot(); cur.st.mine=blank(); save(); draw(); renderHome(); toast("Cleared · Ctrl+Z brings it back")};
 
 window.addEventListener("resize",()=>{if(cur&&vb)fit()});
 DESK.addEventListener("change",()=>{if(DESK.matches){$("home").hidden=false;if(!cur&&SC[0])openScene(SC[0])}});
-fetch("scenes.json",{cache:"no-cache"}).then(r=>r.json()).then(d=>{SC=d;renderHome();
+migrateLS();
+fetch("rules.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(b=>{if(b)BOOK=Array.isArray(b)?b:(b.rules||[]);if(cur&&tab==="rules")renderRules()}).catch(()=>{});
+fetch("scenes.json",{cache:"no-cache"}).then(r=>r.json()).then(d=>{SC=d.map(normScene);renderHome();
   if(DESK.matches){const last=S("last");openScene(SC.find(s=>s.id===last)||SC[0])}})
   .catch(()=>{$("cards").innerHTML="<p>Could not load the PONs. Refresh the page.</p>"});
 })();

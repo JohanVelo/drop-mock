@@ -1,0 +1,193 @@
+{
+ "schema": 1,
+ "note": "evidence_n = cases that keep the rule; counterexamples_n = cases that break it (counts only; case lists stay on Claude's PC)",
+ "rules": [
+  {
+   "id": "R01",
+   "words": "The distribution cable never runs through an erf (0.3 m inset, strict). Follow fences and streets.",
+   "check": "chk_through_erf",
+   "scope": "distribution cable",
+   "status": "soft",
+   "evidence_n": 3769,
+   "counterexamples_n": 392,
+   "cases_total": 4161,
+   "break_rate_pct": 9.42,
+   "broken_under_pressure": 376,
+   "pressured_cases": 2053,
+   "jj_designs_AD": {
+    "cases": 117,
+    "broken": 0
+   }
+  },
+  {
+   "id": "R02",
+   "words": "The distribution cable stays inside its own PON.",
+   "check": "chk_leaves_pon",
+   "scope": "distribution cable",
+   "status": "soft",
+   "evidence_n": 4151,
+   "counterexamples_n": 7,
+   "cases_total": 4158,
+   "break_rate_pct": 0.17,
+   "broken_under_pressure": 2,
+   "pressured_cases": 52,
+   "jj_designs_AD": {
+    "cases": 114,
+    "broken": 0
+   }
+  },
+  {
+   "id": "R03",
+   "words": "Distribution never crosses distribution, and never crosses itself.",
+   "check": "chk_dc_cross",
+   "scope": "per PON",
+   "status": "soft",
+   "evidence_n": 290,
+   "counterexamples_n": 9,
+   "cases_total": 299,
+   "break_rate_pct": 3.01,
+   "broken_under_pressure": 4,
+   "pressured_cases": 108,
+   "jj_designs_AD": {
+    "cases": 4,
+    "broken": 0
+   }
+  },
+  {
+   "id": "R04",
+   "words": "No span longer than 70 m.",
+   "check": "chk_span_gt70",
+   "scope": "spans",
+   "status": "near-hard",
+   "evidence_n": 8856,
+   "counterexamples_n": 55,
+   "cases_total": 8911,
+   "break_rate_pct": 0.62,
+   "broken_under_pressure": 55,
+   "pressured_cases": 876,
+   "jj_designs_AD": {
+    "cases": 117,
+    "broken": 0
+   }
+  },
+  {
+   "id": "R05",
+   "words": "Road crossings are square: within 15 degrees of 90.",
+   "check": "chk_road_skew",
+   "scope": "road crossings",
+   "status": "soft",
+   "evidence_n": 1081,
+   "counterexamples_n": 251,
+   "cases_total": 1332,
+   "break_rate_pct": 18.84,
+   "broken_under_pressure": 52,
+   "pressured_cases": 207,
+   "jj_designs_AD": {
+    "cases": 14,
+    "broken": 1
+   }
+  },
+  {
+   "id": "R06",
+   "words": "No 1:8 serves more than 8 drops.",
+   "check": "chk_cp_gt8",
+   "scope": "1:8 splitters",
+   "status": "near-hard",
+   "evidence_n": 2925,
+   "counterexamples_n": 9,
+   "cases_total": 2934,
+   "break_rate_pct": 0.31,
+   "broken_under_pressure": 9,
+   "pressured_cases": 2173,
+   "jj_designs_AD": {
+    "cases": 55,
+    "broken": 0
+   }
+  },
+  {
+   "id": "R07",
+   "words": "No drop longer than 56 m.",
+   "check": "chk_drop_gt56",
+   "scope": "drops",
+   "status": "soft",
+   "evidence_n": 20031,
+   "counterexamples_n": 1012,
+   "cases_total": 21043,
+   "break_rate_pct": 4.81,
+   "broken_under_pressure": 1007,
+   "pressured_cases": 1461,
+   "jj_designs_AD": {
+    "cases": 428,
+    "broken": 5
+   }
+  },
+  {
+   "id": "R08",
+   "words": "A drop only crosses a road beside a distribution crossing, never alone.",
+   "check": "chk_drop_road",
+   "scope": "drops",
+   "status": "soft",
+   "evidence_n": 20598,
+   "counterexamples_n": 445,
+   "cases_total": 21043,
+   "break_rate_pct": 2.11,
+   "broken_under_pressure": 364,
+   "pressured_cases": 1205,
+   "jj_designs_AD": {
+    "cases": 428,
+    "broken": 0
+   }
+  },
+  {
+   "id": "R09",
+   "words": "One main cable and at most one spur, taken off a 1:8 pole.",
+   "check": "chk_spurs",
+   "scope": "per PON",
+   "status": "soft",
+   "evidence_n": 119,
+   "counterexamples_n": 79,
+   "cases_total": 198,
+   "break_rate_pct": 39.9,
+   "broken_under_pressure": 76,
+   "pressured_cases": 173,
+   "jj_designs_AD": {
+    "cases": 4,
+    "broken": 0
+   }
+  },
+  {
+   "id": "R10",
+   "words": "Never double back: no U-turn (cable turning back on itself under 45 degrees).",
+   "check": "chk_uturn",
+   "scope": "per PON",
+   "status": "soft",
+   "evidence_n": 196,
+   "counterexamples_n": 2,
+   "cases_total": 198,
+   "break_rate_pct": 1.01,
+   "broken_under_pressure": 0,
+   "pressured_cases": 22,
+   "jj_designs_AD": {
+    "cases": 4,
+    "broken": 0
+   }
+  },
+  {
+   "id": "R11",
+   "words": "The main run follows the back fence of each block (about half of JJ's cable sits on back fences; informational, no hard test).",
+   "check": null,
+   "scope": "distribution cable",
+   "status": "candidate",
+   "evidence_n": 0,
+   "counterexamples_n": 0,
+   "cases_total": 0,
+   "break_rate_pct": null,
+   "broken_under_pressure": 0,
+   "pressured_cases": 0,
+   "jj_designs_AD": {
+    "cases": 0,
+    "broken": 0
+   }
+  }
+ ]
+}
