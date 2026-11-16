@@ -828,7 +828,7 @@ function yoursTerms(){const s=cur,M=cur.st.mine;
   T.s16_moved_m=null;scoreCache={key,v:T};return T}
 
 /* ---------- panels: Why / Score / Changes / Rounds / A-B ---------- */
-const SECS=[["why","Why"],["score","Score"],["changes","Changes"],["rounds","Rounds"],["ab","A/B"]];
+const SECS=[["why","Thinking"],["score","Score"],["changes","Changes"],["rounds","Rounds"],["ab","A/B"]];
 $("pbtn").onclick=()=>{popen=!popen;renderPanel();requestAnimationFrame(()=>{if(cur&&vb)fit()})};
 function renderPanel(){const P=$("panel");if(!cur||tab==="rules"||!popen){P.hidden=true;$("pbtn").classList.toggle("on",false);return}
   P.hidden=false;const old=P.querySelector(".pbody");const top=old?old.scrollTop:0;P.innerHTML="";
