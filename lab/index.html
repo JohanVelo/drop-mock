@@ -289,7 +289,7 @@ svg#map{width:100%;height:100%;display:block;touch-action:none}
     <section><h4>Keys</h4><div class="keys">
       <kbd>1</kbd>–<kbd>4</kbd> tabs · <kbd>F</kbd> fit · <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo<br>
       Scroll = zoom · drag = move (any tool) · <kbd>Space</kbd>+drag = move<br>
-      <kbd>Esc</kbd> stop the cable / drop chain · <kbd>[</kbd> <kbd>]</kbd> previous / next PON
+      Right-click or <kbd>Esc</kbd> stop the cable / drop chain · <kbd>[</kbd> <kbd>]</kbd> previous / next PON
     </div></section>
   </aside>
 </div>
@@ -446,7 +446,7 @@ const TOOLS={
  compare:[["pan","Move / tap for why","#0f6b63","V"],["pin","Pin a note","#7b3fb0","P"]]
 };
 const HINT={pan:"Drag to move · scroll or pinch to zoom · tap a pole, cable, 1:8 or drop to say why.",copyc:"Copies Claude's plan into yours so you can change it.",pin:"Click the spot that's wrong, then say why.",pole:"Click to place a pole. It snaps to the nearest erf corner.",s16:"Click where the 1:16 goes.",
- span:"Click a pole, then the next. Keep clicking to string the cable; empty space adds a corner pole. Esc stops the chain.",cp:"Click a pole to put a 1:8 on it.",drop:"Click a 1:8, then click its homes. The badge counts to 8. Esc stops.",erase:"Click anything you drew to remove it."};
+ span:"Click a pole, then the next. Keep clicking to string the cable; empty space adds a corner pole. Right-click or Esc stops the cable.",cp:"Click a pole to put a 1:8 on it.",drop:"Click a 1:8, then click its homes. The badge counts to 8. Right-click or Esc stops.",erase:"Click anything you drew to remove it."};
 let layers={dc:true,spur:true,poles:true,cps:true,drops:true,s16:true,homes:true,pon:true,erven:true,roads:true,ghost:false};
 const LAYERS=[["dc","Distribution - main","line","var(--q-main)",1.8],["spur","Distribution - spur","line","var(--q-spur)",1.8],
  ["drops","Drop cables","line","var(--q-drop)",.8],["poles","Poles","pole"],["cps","1:8 splitters","cp"],["s16","1:16 splitter","s16"],
@@ -602,7 +602,10 @@ svg.addEventListener("pointermove",e=>{
   if(gest.moved){vb.x=gest.vb.x-(p.x-p.x0)/r.width*gest.vb.w;vb.y=gest.vb.y-(p.y-p.y0)/r.height*gest.vb.h;setVB()}});
 svg.addEventListener("pointerleave",()=>{if(hover){hover=null;draw()}});
 function up(e){const p=ptrs.get(e.pointerId);const had=!!p;ptrs.delete(e.pointerId);if(!had)return;
-  if(ptrs.size===0){if(gest&&!gest.moved&&p.btn===0)tap(toM(e));gest=null;svg.style.cursor=tool==="pan"?"grab":"crosshair"}
+  if(ptrs.size===0){
+    // right-click without dragging = finish the cable / drop chain (like QGIS); right-drag still pans
+    if(p.btn===2&&Math.hypot(p.x-p.x0,p.y-p.y0)<=6){if(sel){sel=null;hover=null;draw();toast(tool==="drop"?"Drops stopped":"Cable stopped")}gest=null;svg.style.cursor=tool==="pan"?"grab":"crosshair";return}
+    if(gest&&!gest.moved&&p.btn===0)tap(toM(e));gest=null;svg.style.cursor=tool==="pan"?"grab":"crosshair"}
   else{gest={vb:Object.assign({},vb),moved:true};const q=[...ptrs.values()][0];q.x0=q.x;q.y0=q.y}}
 svg.addEventListener("pointerup",up);svg.addEventListener("pointercancel",e=>{ptrs.delete(e.pointerId);gest=null});
 
